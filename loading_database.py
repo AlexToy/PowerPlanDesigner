@@ -1,5 +1,6 @@
 import openpyxl
 from Dcdc import Dcdc
+from Psu import Psu
 
 
 # DCDC DATABASE
@@ -63,7 +64,7 @@ def loading_database():
             current = str(sheet_psu.cell(CURRENT, column).value)
 
             print(name)
-            psu_list.append(Component.PsuComponent(name, voltage_input, voltage_output, current))
+            psu_list.append(Psu(name, voltage_input, voltage_output, current))
 
     # Loading CONSUMER DATABASE
     consumer_list = []
