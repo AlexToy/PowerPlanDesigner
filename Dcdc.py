@@ -1,10 +1,14 @@
 from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtCore
 
 
 class Dcdc(QWidget):
+    # Signals
+    parameters_is_updated = QtCore.pyqtSignal(str)
+    add_child_clicked = QtCore.pyqtSignal(str)
+
     def __init__(self, ref_component, supplier, current_max, equivalence_code, voltage_input_min, voltage_input_max,
-                 voltage_output_min, voltage_output_max, parent=None):
-        super(Dcdc, self).__init__(parent)
+                 voltage_output_min, voltage_output_max):
 
         #  Fixed parameters
         self.ref_component = ref_component

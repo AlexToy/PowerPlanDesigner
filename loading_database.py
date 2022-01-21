@@ -1,4 +1,5 @@
 import openpyxl
+from typing import List
 from Dcdc import Dcdc
 from Psu import Psu
 from Consumer import Consumer
@@ -23,7 +24,8 @@ CURRENT = 4
 FILE_DATABASE = "DATA_BASE.xlsx"
 
 
-def loading_database():
+def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
+
     input_file = openpyxl.load_workbook(FILE_DATABASE, read_only=True)
     for sheet in input_file:
         if sheet.title == "DCDC":
@@ -34,6 +36,7 @@ def loading_database():
             sheet_consumer = sheet
 
     print("Loading database ...")
+
     # Loading DCDC DATABASE
     dcdc_list = []
     column = 1
