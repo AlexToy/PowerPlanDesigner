@@ -1,5 +1,5 @@
 import openpyxl
-import Component
+from Dcdc import Dcdc
 
 
 # DCDC DATABASE
@@ -48,8 +48,8 @@ def loading_database():
             voltage_output_max = str(sheet_dcdc.cell(VOLTAGE_OUTPUT_MAX, column).value)
 
             print(ref_component)
-            dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
-                                        voltage_input_max, voltage_output_min, voltage_output_max))
+            dcdc_list.append(Dcdc(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
+                                  voltage_input_max, voltage_output_min, voltage_output_max))
 
     # Loading PSU DATABASE
     psu_list = []
