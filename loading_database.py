@@ -1,6 +1,6 @@
 import openpyxl
 import Component
-from DcdcWidget import DcdcWidget
+
 
 # DCDC DATABASE
 REF_COMPONENT = 1
