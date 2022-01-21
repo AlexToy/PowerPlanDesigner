@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget
 
+
 class Consumer(QWidget):
     def __init__(self, name, text, voltage, current, parent=None):
         super(Consumer, self).__init__(parent)
