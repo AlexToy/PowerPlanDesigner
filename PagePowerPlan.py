@@ -17,19 +17,17 @@ class PagePowerPlan(QWidget):
         self.layout = QGridLayout()
 
         # Initial state, only one button is on the page at the pos : (0,0)
-        self.button_right = QPushButton("+")
-        self.button_right.setFixedSize(50, 50)
-        self.button_right_pos_x = 0
-        self.button_right_pos_y = 0
-        self.button_right.clicked.connect(self.open_add_element_right_button)
-        self.layout.addWidget(self.button_right, self.button_right_pos_y, self.button_right_pos_x)
+        self.button_right = AddElementButton("Right")
+        self.button_right.clicked_button.connect(self.open_add_element)
+        self.button_right.pos_x = 0
+        self.button_right.pos_y = 0
+        self.layout.addWidget(self.button_right,self.button_right.pos_x, self.button_right.pos_y)
 
         # The second button is used when there is a widget on the page
-        self.button_bottom = QPushButton("+")
-        self.button_bottom.setFixedSize(50, 50)
-        self.button_bottom_pos_x = 0
-        self.button_bottom_pos_y = 0
-        self.button_bottom.clicked.connect(self.open_add_element_bottom_button)
+        self.button_bottom = AddElementButton("Bottom")
+        self.button_bottom.clicked_button.connect(self.open_add_element)
+        self.button_bottom.pos_x = -1
+        self.button_bottom.pos_y = 1
 
         # Add element page
         self.add_element = AddElement()
@@ -40,19 +38,13 @@ class PagePowerPlan(QWidget):
 
         self.setLayout(self.layout)
 
-    def open_add_element_right_button(self):
-        print("DEBUG : Right button clicked")
-        self.add_element.set_pos_x_y(self.button_right_pos_x, self.button_right_pos_y)
-        self.add_element.set_adding_button("Right")
+    def open_add_element(self, widget_location: str, pos_x: int, pos_y: int):
+        print("DEBUG : Button " + widget_location + " clicked")
+        print("DEBUG : Position " + str(pos_x) + str(pos_y))
+        self.add_element.set_widget_position(widget_location, pos_x, pos_y)
         self.add_element.show()
 
-    def open_add_element_bottom_button(self):
-        print("DEBUG : Bottom button clicked")
-        self.add_element.set_pos_x_y(self.button_bottom_pos_x, self.button_bottom_pos_y)
-        self.add_element.set_adding_button("Bottom")
-        self.add_element.show()
-
-    def add_new_element(self, dcdc: Dcdc, pos_x: int, pos_y: int, adding_button: str):
+    def add_new_element(self, dcdc: Dcdc, location: str, pos_x: int, pos_y: int):
         # Create a copy from a database dcdc
         new_dcdc = Dcdc(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
                         dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
@@ -65,7 +57,7 @@ class PagePowerPlan(QWidget):
         new_dcdc_widget = DcdcWidget(new_dcdc)
 
         # Adding dcdc on the page
-        self.graphic_update(new_dcdc_widget, pos_x, pos_y, adding_button)
+        self.graphic_update(new_dcdc_widget, location, pos_x, pos_y)
 
         # Close add_element window
         self.add_element.close()
@@ -76,28 +68,34 @@ class PagePowerPlan(QWidget):
         for element in self.list_element:
             print("Element from current elements :" + element.name)
 
-    def graphic_update(self, dcdc_widget, pos_x: int, pos_y: int, adding_button: str):
+    def graphic_update(self, dcdc_widget, location: str, pos_x: int, pos_y: int):
+        # Calculate the new buttons positions
+        if location == "Right":
+            self.button_right.pos_x = self.button_right.pos_x + 1
+            self.button_bottom.pos_x = self.button_bottom.pos_x + 1
+        elif location == "Bottom":
+            self.button_right.pos_y = self.button_right.pos_y + 1
+            self.button_bottom.pos_y = self.button_bottom.pos_y + 1
+        # Add buttons to their new position
+        self.layout.addWidget(self.button_right, self.button_right.pos_y, self.button_right.pos_x)
+        self.layout.addWidget(self.button_bottom, self.button_bottom.pos_y, self.button_bottom.pos_x)
+        # Add the widget to its new position
         self.layout.addWidget(dcdc_widget, pos_y, pos_x)
-        if adding_button == "Right":
-            self.layout.addWidget(self.button_right, pos_x + 1, pos_y)
-            self.layout.addWidget(self.button_bottom, pos_x + 1, pos_y)
-        elif adding_button == "Bottom":
-            self.layout.addWidget(self.button_right, pos_x + 1, pos_y + 1)
-            self.layout.addWidget(self.button_bottom, pos_x + 1, pos_y + 1)
 
-
-class add_element_button(QPushButton):
+class AddElementButton(QPushButton):
     #Signal
     clicked_button = QtCore.pyqtSignal(str, int, int)
 
-    def __init__(self, parent=None):
-        super(add_element_button, self).__init__(parent)
+    def __init__(self, widget_location, parent=None):
+        super(AddElementButton, self).__init__(parent)
 
+        self.setText("+")
+        self.setFixedSize(50, 50)
         self.pos_x = 0
         self.pos_y = 0
-        self.widget_position = ""
+        self.widget_location = widget_location
 
         self.clicked.connect(self.clicked_button_function)
 
     def clicked_button_function(self):
-        self.clicked_button.emit(self.widget_position, self.pos_x, self.pos_y)
+        self.clicked_button.emit(self.widget_location, self.pos_x, self.pos_y)

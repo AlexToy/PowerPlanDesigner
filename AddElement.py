@@ -12,7 +12,7 @@ class AddElement(QTabWidget):
     # sends the page a copy of the chosen element
 
     # Signal
-    dcdc_selected = QtCore.pyqtSignal(object, int, int, str)
+    dcdc_selected = QtCore.pyqtSignal(object, str, int, int)
 
     def __init__(self, parent=None):
         super(AddElement, self).__init__(parent)
@@ -23,7 +23,7 @@ class AddElement(QTabWidget):
         # Settings variables
         self.pos_x = 0
         self.pos_y = 0
-        self.adding_button = ""
+        self.location = ""
 
         # 2 Graphical widget
         # DC/DC
@@ -51,18 +51,15 @@ class AddElement(QTabWidget):
         self.addTab(self.tab_consumer, "CONSUMER")
 
         self.setWindowTitle("Add new element")
-        self.setFixedSize(450, 400)
+        self.setFixedSize(600, 600)
 
     def send_dcdc_selected(self, dcdc_copy: Dcdc):
-        print("yo")
-        self.dcdc_selected.emit(dcdc_copy, self.pos_x, self.pos_y, self.adding_button)
+        self.dcdc_selected.emit(dcdc_copy, self.location, self.pos_x, self.pos_y)
 
-    def set_pos_x_y(self, pos_x: int, pos_y:int):
+    def set_widget_position(self, location: str, pos_x: int, pos_y: int):
+        self.location = location
         self.pos_x = pos_x
         self.pos_y = pos_y
-
-    def set_adding_button(self, adding_button: str):
-        self.adding_button = adding_button
 
 
 class SelectDcdcWidget(QGroupBox):
@@ -100,7 +97,7 @@ class SelectDcdcWidget(QGroupBox):
 
         # Widget settings
         self.add_dcdc_button.clicked.connect(self.clicked_button_function)
-        self.add_dcdc_button.setFixedSize(150, 25)
+        # self.add_dcdc_button.setFixedSize(150, 25)
         self.name.setFixedSize(150, 25)
         self.v_in.setFixedSize(150, 25)
         self.v_out.setFixedSize(150, 25)
