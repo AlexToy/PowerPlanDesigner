@@ -12,13 +12,18 @@ class AddElement(QTabWidget):
     # sends the page a copy of the chosen element
 
     # Signal
-    dcdc_selected = QtCore.pyqtSignal(object)
+    dcdc_selected = QtCore.pyqtSignal(object, int, int, str)
 
     def __init__(self, parent=None):
         super(AddElement, self).__init__(parent)
 
         # 1 Import the database
         self.list_dcdc_database, self.list_psu_database, self.list_consumer_database = loading_database()
+
+        # Settings variables
+        self.pos_x = 0
+        self.pos_y = 0
+        self.adding_button = ""
 
         # 2 Graphical widget
         # DC/DC
@@ -49,7 +54,15 @@ class AddElement(QTabWidget):
         self.setFixedSize(450, 400)
 
     def send_dcdc_selected(self, dcdc_copy: Dcdc):
-        self.dcdc_selected.emit(dcdc_copy)
+        print("yo")
+        self.dcdc_selected.emit(dcdc_copy, self.pos_x, self.pos_y, self.adding_button)
+
+    def set_pos_x_y(self, pos_x: int, pos_y:int):
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+
+    def set_adding_button(self, adding_button: str):
+        self.adding_button = adding_button
 
 
 class SelectDcdcWidget(QGroupBox):
