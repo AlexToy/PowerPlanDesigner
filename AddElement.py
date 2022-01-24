@@ -17,7 +17,7 @@ class AddElement(QTabWidget):
     def __init__(self, parent=None):
         super(AddElement, self).__init__(parent)
 
-        # 1 import the database
+        # 1 Import the database
         self.list_dcdc_database, self.list_psu_database, self.list_consumer_database = loading_database()
 
         # 2 Graphical widget
@@ -48,7 +48,11 @@ class AddElement(QTabWidget):
         self.setWindowTitle("Add new element")
 
     def send_dcdc_selected(self, dcdc_copy: Dcdc):
+        print("Send" + dcdc_copy.name)
         self.dcdc_selected.emit(dcdc_copy)
+
+    def __del__(self):
+        print("Del class")
 
 
 class SelectDcdcWidget(QGroupBox):
@@ -58,10 +62,8 @@ class SelectDcdcWidget(QGroupBox):
     def __init__(self, dcdc, parent=None):
         super(SelectDcdcWidget, self).__init__(parent)
 
-        # Create a copy from a database dcdc
-        self.dcdc_copy = Dcdc(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
-                              dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
-                              dcdc.voltage_output_max)
+        # Get dcdc from database
+        self.dcdc_copy = dcdc
 
         # creation of widget & layout
         self.layout = QHBoxLayout()
@@ -96,14 +98,11 @@ class SelectDcdcWidget(QGroupBox):
         self.setLayout(self.layout)
 
     def clicked_button_function(self):
-        if self.name.toPlainText() != "" and self.v_in.toPlainText() != "" and self.v_out.toPlainText() != "" and \
-                self.pos_x.toPlainText() != "" and self.pos_y.toPlainText() != "":
+        if self.name.toPlainText() != "" and self.v_in.toPlainText() != "" and self.v_out.toPlainText() != "":
 
-            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.toPlainText()) <= float(
-                    self.dcdc_copy.voltage_input_max):
+            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.toPlainText()) <= float(self.dcdc_copy.voltage_input_max):
 
-                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.toPlainText()) <= float(
-                        self.dcdc_copy.voltage_output_max):
+                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.toPlainText()) <= float(self.dcdc_copy.voltage_output_max):
 
                     # Add user parameters to the DC/DC
                     self.dcdc_copy.voltage_input = self.v_in.toPlainText()
@@ -112,7 +111,6 @@ class SelectDcdcWidget(QGroupBox):
 
                     # Send dcdc_selected signal
                     self.clicked_add_dcdc.emit(self.dcdc_copy)
-
                     # TODO : Deleted this class and AddElement class
 
                 else:

@@ -9,7 +9,6 @@ class Dcdc(QWidget):
 
     def __init__(self, ref_component, supplier, current_max, equivalence_code, voltage_input_min, voltage_input_max,
                  voltage_output_min, voltage_output_max):
-
         #  Fixed parameters
         self.ref_component = ref_component
         self.supplier = supplier
