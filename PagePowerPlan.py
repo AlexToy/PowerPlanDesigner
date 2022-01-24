@@ -48,7 +48,7 @@ class PagePowerPlan(QWidget):
 
     def open_add_element_bottom_button(self):
         print("DEBUG : Bottom button clicked")
-        self.add_element.set_pos_x_y(self.bottom_button_pos_x, self.bottom_button_pos_y)
+        self.add_element.set_pos_x_y(self.button_bottom_pos_x, self.button_bottom_pos_y)
         self.add_element.set_adding_button("Bottom")
         self.add_element.show()
 
@@ -79,8 +79,25 @@ class PagePowerPlan(QWidget):
     def graphic_update(self, dcdc_widget, pos_x: int, pos_y: int, adding_button: str):
         self.layout.addWidget(dcdc_widget, pos_y, pos_x)
         if adding_button == "Right":
-            self.layout.addWidget(self.button_right, pos_y, pos_x + 1)
-            self.layout.addWidget(self.button_bottom, pos_y, pos_x + 1)
+            self.layout.addWidget(self.button_right, pos_x + 1, pos_y)
+            self.layout.addWidget(self.button_bottom, pos_x + 1, pos_y)
         elif adding_button == "Bottom":
-            self.layout.addWidget(self.button_right, pos_y + 1, pos_x)
-            self.layout.addWidget(self.button_bottom, pos_y + 1, pos_x)
+            self.layout.addWidget(self.button_right, pos_x + 1, pos_y + 1)
+            self.layout.addWidget(self.button_bottom, pos_x + 1, pos_y + 1)
+
+
+class add_element_button(QPushButton):
+    #Signal
+    clicked_button = QtCore.pyqtSignal(str, int, int)
+
+    def __init__(self, parent=None):
+        super(add_element_button, self).__init__(parent)
+
+        self.pos_x = 0
+        self.pos_y = 0
+        self.widget_position = ""
+
+        self.clicked.connect(self.clicked_button_function)
+
+    def clicked_button_function(self):
+        self.clicked_button.emit(self.widget_position, self.pos_x, self.pos_y)
