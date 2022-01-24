@@ -46,13 +46,10 @@ class AddElement(QTabWidget):
         self.addTab(self.tab_consumer, "CONSUMER")
 
         self.setWindowTitle("Add new element")
+        self.setFixedSize(450, 400)
 
     def send_dcdc_selected(self, dcdc_copy: Dcdc):
-        print("Send" + dcdc_copy.name)
         self.dcdc_selected.emit(dcdc_copy)
-
-    def __del__(self):
-        print("Del class")
 
 
 class SelectDcdcWidget(QGroupBox):
@@ -111,7 +108,11 @@ class SelectDcdcWidget(QGroupBox):
 
                     # Send dcdc_selected signal
                     self.clicked_add_dcdc.emit(self.dcdc_copy)
-                    # TODO : Deleted this class and AddElement class
+
+                    # Clear parameters
+                    self.name.setText("")
+                    self.v_in.setText("")
+                    self.v_out.setText("")
 
                 else:
                     print("DEBUG : Output voltage is not in the DC/DC Scope !")
