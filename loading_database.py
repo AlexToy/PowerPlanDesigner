@@ -24,6 +24,14 @@ PSU_VOLTAGE_IN = 5
 PSU_VOLTAGE_OUT = 6
 PSU_JACK = 7
 
+# CONSUMER DATABASE
+CONSUMER_NAME = 1
+CONSUMER_REF_COMPONENT = 2
+CONSUMER_INFO = 3
+CONSUMER_EQUIVALENCE_CODE = 4
+CONSUMER_VOLTAGE_INPUT = 5
+CONSUMER_CURRENT_INPUT = 6
+
 FILE_DATABASE = "DATA_BASE.xlsx"
 
 
@@ -82,13 +90,14 @@ def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
     for _ in sheet_consumer:
         column = column + 1
         if str(sheet_consumer.cell(1, column).value) != "None":
-            name = str(sheet_consumer.cell(1, column).value)
-            text = str(sheet_consumer.cell(2, column).value)
-            voltage = str(sheet_consumer.cell(3, column).value)
-            current = str(sheet_consumer.cell(4, column).value)
+            name = str(sheet_consumer.cell(CONSUMER_NAME, column).value)
+            ref_component = str(sheet_consumer.cell(CONSUMER_REF_COMPONENT, column).value)
+            info = str(sheet_consumer.cell(CONSUMER_INFO, column).value)
+            equivalence_code = str(sheet_consumer.cell(CONSUMER_EQUIVALENCE_CODE, column).value)
+            voltage_input = float(sheet_consumer.cell(CONSUMER_VOLTAGE_INPUT, column).value)
+            current_input = float(sheet_consumer.cell(CONSUMER_CURRENT_INPUT, column).value)
 
-            print(name)
-            consumer_list.append(Consumer(name, text, voltage, current))
+            consumer_list.append(Consumer(name, ref_component, info, equivalence_code, voltage_input, current_input))
 
     print("Database loaded !")
     return dcdc_list, psu_list, consumer_list

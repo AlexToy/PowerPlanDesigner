@@ -44,12 +44,19 @@ class AddElement(QTabWidget):
             self.tab_psu_layout.addWidget(self.select_psu_widget)
         self.tab_psu.setLayout(self.tab_psu_layout)
 
-        # TODO : LDO
-        self.tab_ldo = QScrollArea()
+        # LDO
+        self.tab_consumer = QScrollArea()
+        self.tab_consumer_layout = QVBoxLayout()
+        for consumer in self.list_consumer_database:
+            self.select_consumer_widget = SelectConsumerWidget(consumer)
+            self.select_consumer_widget.clicked_add_consumer.connect(self.send_element_selected)
+            self.tab_consumer_layout.addWidget(self.select_consumer_widget)
+        self.tab_consumer.setLayout(self.tab_consumer_layout)
+
         # TODO : SWITCH
         self.tab_switch = QScrollArea()
-        # TODO : CONSUMER
-        self.tab_consumer = QScrollArea()
+        # TODO : LDO
+        self.tab_ldo = QScrollArea()
 
         self.addTab(self.tab_dcdc, "DC/DC")
         self.addTab(self.tab_psu, "PSU")
@@ -184,3 +191,35 @@ class SelectPsuWidget(QGroupBox):
             self.name.setText("")
         else:
             print("DEBUG : The name is empty !")
+
+
+class SelectConsumerWidget(QGroupBox):
+    # Signal
+    clicked_add_consumer = QtCore.pyqtSignal(object)
+
+    def __init__(self, consumer, parent=None):
+        super(SelectConsumerWidget, self).__init__(parent)
+
+        # Get consumer from database
+        self.consumer = consumer
+
+        # creation of widget & layout
+        self.layout = QGridLayout()
+        self.line_1 = QLabel(self.consumer.ref_component)
+        self.line_2 = QLabel(self.consumer.info)
+        self.line_3 = QLabel(self.consumer.equivalence_code)
+        self.add_consumer_button = QPushButton("Add")
+
+        # Layout
+        self.layout.addWidget(self.line_1, 0, 0)
+        self.layout.addWidget(self.line_2, 1, 0)
+        self.layout.addWidget(self.line_3, 2, 0)
+        self.layout.addWidget(self.add_consumer_button, 0, 1)
+
+        # Widget settings
+        self.add_consumer_button.clicked.connect(self.clicked_button_function)
+        self.setTitle(self.consumer.name)
+        self.setLayout(self.layout)
+
+    def clicked_button_function(self):
+        self.clicked_add_consumer.emit(self.consumer)

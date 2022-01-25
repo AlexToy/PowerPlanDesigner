@@ -3,8 +3,10 @@ from PyQt5 import QtCore
 from AddElement import AddElement
 from Dcdc import Dcdc
 from Psu import Psu
+from Consumer import Consumer
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
+from ConsumerWidget import ConsumerWidget
 
 
 class PagePowerPlan(QWidget):
@@ -70,6 +72,14 @@ class PagePowerPlan(QWidget):
 
             # Create the graphical widget of dcdc
             new_element_widget = PsuWidget(new_psu)
+
+        elif element.component == "Consumer":
+            consumer = element
+            new_consumer = Consumer(consumer.name, consumer.ref_component, consumer.info, consumer.equivalence_code,
+                                    consumer.voltage_input, consumer.current_input)
+
+            # Create the graphical widget of dcdc
+            new_element_widget = ConsumerWidget(new_consumer)
 
         # Adding dcdc on the page
         self.graphic_update(new_element_widget, location, pos_x, pos_y)

@@ -2,28 +2,16 @@ from PyQt5.QtWidgets import QWidget
 
 
 class Consumer(QWidget):
-    def __init__(self, name, text, voltage, current, parent=None):
+    def __init__(self, name: str, ref_component: str, info: str, equivalence_code: str,
+                 voltage_input: float, current_input: float, parent=None):
 
         #  Fixed parameters
         self.name = name
-        self.text = text
-        self.voltage_input = voltage
-        self.current_input = current
-        self.power_input = float(self.voltage_input) * float(self.current_input)
+        self.ref_component = ref_component
+        self.info = info
+        self.equivalence_code = equivalence_code
+        self.voltage_input = voltage_input
+        self.current_input = current_input
+        self.power_input = voltage_input * current_input
+        self.component = "Consumer"
 
-        self.parent = 0
-        self.children = []
-
-    def print_parameters(self):
-        print(self.name)
-        print("Vin : " + str(self.voltage_input) + " V")
-        print("Iin : " + str(self.current_input) + " mA")
-        print("Pin : " + str(self.power_input) + " mW")
-
-    def add_parent(self, parent):
-        self.parent = parent
-        print("DEBUG : add " + parent.name + "as parent to " + self.name)
-
-    def remove_parent(self):
-        print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
-        self.parent = 0
