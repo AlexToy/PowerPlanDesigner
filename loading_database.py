@@ -16,10 +16,13 @@ VOLTAGE_OUTPUT_MIN = 7
 VOLTAGE_OUTPUT_MAX = 8
 
 # PSU DATABASE
-NAME = 1
-VOLTAGE_IN = 2
-VOLTAGE_OUT = 3
-CURRENT = 4
+PSU_REF_COMPONENT = 1
+PSU_SUPPLIER = 2
+PSU_EQUIVALENCE_CODE = 3
+PSU_CURRENT_MAX = 4
+PSU_VOLTAGE_IN = 5
+PSU_VOLTAGE_OUT = 6
+PSU_JACK = 7
 
 FILE_DATABASE = "DATA_BASE.xlsx"
 
@@ -62,13 +65,16 @@ def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
     for _ in sheet_psu:
         column = column + 1
         if str(sheet_psu.cell(1, column).value) != "None":
-            name = str(sheet_psu.cell(NAME, column).value)
-            voltage_input = str(sheet_psu.cell(VOLTAGE_IN, column).value)
-            voltage_output = str(sheet_psu.cell(VOLTAGE_OUT, column).value)
-            current = str(sheet_psu.cell(CURRENT, column).value)
+            ref_component = str(sheet_psu.cell(PSU_REF_COMPONENT, column).value)
+            supplier = str(sheet_psu.cell(PSU_SUPPLIER, column).value)
+            equivalence_code = str(sheet_psu.cell(PSU_EQUIVALENCE_CODE, column).value)
+            current_max = float(sheet_psu.cell(PSU_CURRENT_MAX, column).value)
+            voltage_input = float(sheet_psu.cell(PSU_VOLTAGE_IN, column).value)
+            voltage_output = float(sheet_psu.cell(PSU_VOLTAGE_OUT, column).value)
+            jack = str(sheet_psu.cell(PSU_JACK, column).value)
 
-            print(name)
-            psu_list.append(Psu(name, voltage_input, voltage_output, current))
+            psu_list.append(Psu(ref_component, supplier, equivalence_code, current_max, voltage_input,
+                                voltage_output, jack))
 
     # Loading CONSUMER DATABASE
     consumer_list = []

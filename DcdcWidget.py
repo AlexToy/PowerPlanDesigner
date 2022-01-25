@@ -50,12 +50,11 @@ class DcdcWidget(QGroupBox):
         self.grid_layout.addWidget(self.efficiency_label, 3, 1)
 
         # Output
-        self.output_button = QPushButton("Output")
-        # TODO : self.output_button.clicked.connect(self.output_button_clicked)
+        self.output_label = QLabel("Output")
         self.voltage_out_label = QLabel(str(self.dcdc.voltage_output) + " V")
         self.current_out_label = QLabel(str(self.dcdc.current_output) + " A")
         self.power_out_label = QLabel(str(self.dcdc.power_output) + " W")
-        self.grid_layout.addWidget(self.output_button, 0, 2)
+        self.grid_layout.addWidget(self.output_label, 0, 2)
         self.grid_layout.addWidget(self.voltage_out_label, 1, 2)
         self.grid_layout.addWidget(self.current_out_label, 2, 2)
         self.grid_layout.addWidget(self.power_out_label, 3, 2)

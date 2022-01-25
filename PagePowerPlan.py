@@ -21,7 +21,7 @@ class PagePowerPlan(QWidget):
         self.button_right.clicked_button.connect(self.open_add_element)
         self.button_right.pos_x = 0
         self.button_right.pos_y = 0
-        self.layout.addWidget(self.button_right,self.button_right.pos_x, self.button_right.pos_y)
+        self.layout.addWidget(self.button_right,self.button_right.pos_x, self.button_right.pos_y, QtCore.Qt.AlignCenter)
 
         # The second button is used when there is a widget on the page
         self.button_bottom = AddElementButton("Bottom")
@@ -65,8 +65,6 @@ class PagePowerPlan(QWidget):
         # Add the new element in the list
         self.list_element.append(new_dcdc)
         self.list_element_widget.append(new_dcdc_widget)
-        for element in self.list_element:
-            print("Element from current elements :" + element.name)
 
     def graphic_update(self, dcdc_widget, location: str, pos_x: int, pos_y: int):
         # Calculate the new buttons positions
@@ -77,8 +75,8 @@ class PagePowerPlan(QWidget):
             self.button_right.pos_y = self.button_right.pos_y + 1
             self.button_bottom.pos_y = self.button_bottom.pos_y + 1
         # Add buttons to their new position
-        self.layout.addWidget(self.button_right, self.button_right.pos_y, self.button_right.pos_x)
-        self.layout.addWidget(self.button_bottom, self.button_bottom.pos_y, self.button_bottom.pos_x)
+        self.layout.addWidget(self.button_right, self.button_right.pos_y, self.button_right.pos_x, QtCore.Qt.AlignLeft)
+        self.layout.addWidget(self.button_bottom, self.button_bottom.pos_y, self.button_bottom.pos_x, QtCore.Qt.AlignTop)
         # Add the widget to its new position
         self.layout.addWidget(dcdc_widget, pos_y, pos_x)
 
