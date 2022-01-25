@@ -13,6 +13,7 @@ class Psu(QWidget):
         self.voltage_output = voltage_output
         self.voltage_input = voltage_input
         self.jack = jack
+        self.component = "PSU"
 
         # Dynamic parameters
         self.name = ""

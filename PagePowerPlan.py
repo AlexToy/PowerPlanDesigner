@@ -2,7 +2,9 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
 from PyQt5 import QtCore
 from AddElement import AddElement
 from Dcdc import Dcdc
+from Psu import Psu
 from DcdcWidget import DcdcWidget
+from PsuWidget import PsuWidget
 
 
 class PagePowerPlan(QWidget):
@@ -44,27 +46,39 @@ class PagePowerPlan(QWidget):
         self.add_element.set_widget_position(widget_location, pos_x, pos_y)
         self.add_element.show()
 
-    def add_new_element(self, dcdc: Dcdc, location: str, pos_x: int, pos_y: int):
-        # Create a copy from a database dcdc
-        new_dcdc = Dcdc(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
-                        dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
-                        dcdc.voltage_output_max)
-        new_dcdc.voltage_input = dcdc.voltage_input
-        new_dcdc.voltage_output = dcdc.voltage_output
-        new_dcdc.name = dcdc.name
+    def add_new_element(self, element, location: str, pos_x: int, pos_y: int):
+        # Find which is the element
+        if element.component == "DCDC":
 
-        # Create the graphical widget of dcdc
-        new_dcdc_widget = DcdcWidget(new_dcdc)
+            # Create a copy from a database dcdc
+            dcdc = element
+            new_dcdc = Dcdc(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
+                            dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
+                            dcdc.voltage_output_max)
+            new_dcdc.voltage_input = dcdc.voltage_input
+            new_dcdc.voltage_output = dcdc.voltage_output
+            new_dcdc.name = dcdc.name
+
+            # Create the graphical widget of dcdc
+            new_element_widget = DcdcWidget(new_dcdc)
+
+        elif element.component == "PSU":
+            psu = element
+            new_psu = Psu(psu.ref_component, psu.supplier, psu.equivalence_code, psu.current_max,
+                          psu.voltage_input, psu.voltage_output, psu.jack)
+            new_psu.name = psu.name
+
+            # Create the graphical widget of dcdc
+            new_element_widget = PsuWidget(new_psu)
 
         # Adding dcdc on the page
-        self.graphic_update(new_dcdc_widget, location, pos_x, pos_y)
+        self.graphic_update(new_element_widget, location, pos_x, pos_y)
 
         # Close add_element window
         self.add_element.close()
 
         # Add the new element in the list
-        self.list_element.append(new_dcdc)
-        self.list_element_widget.append(new_dcdc_widget)
+        self.list_element_widget.append(new_element_widget)
 
     def graphic_update(self, dcdc_widget, location: str, pos_x: int, pos_y: int):
         # Calculate the new buttons positions

@@ -31,12 +31,19 @@ class AddElement(QTabWidget):
         self.tab_dcdc_layout = QVBoxLayout()
         for dcdc in self.list_dcdc_database:
             self.select_dcdc_widget = SelectDcdcWidget(dcdc)
-            self.select_dcdc_widget.clicked_add_dcdc.connect(self.send_dcdc_selected)
+            self.select_dcdc_widget.clicked_add_dcdc.connect(self.send_element_selected)
             self.tab_dcdc_layout.addWidget(self.select_dcdc_widget)
         self.tab_dcdc.setLayout(self.tab_dcdc_layout)
 
-        # TODO : PSU
+        # PSU
         self.tab_psu = QScrollArea()
+        self.tab_psu_layout = QVBoxLayout()
+        for psu in self.list_psu_database:
+            self.select_psu_widget = SelectPsuWidget(psu)
+            self.select_psu_widget.clicked_add_psu.connect(self.send_element_selected)
+            self.tab_psu_layout.addWidget(self.select_psu_widget)
+        self.tab_psu.setLayout(self.tab_psu_layout)
+
         # TODO : LDO
         self.tab_ldo = QScrollArea()
         # TODO : SWITCH
@@ -53,8 +60,8 @@ class AddElement(QTabWidget):
         self.setWindowTitle("Add new element")
         self.setFixedSize(600, 600)
 
-    def send_dcdc_selected(self, dcdc_copy: Dcdc):
-        self.dcdc_selected.emit(dcdc_copy, self.location, self.pos_x, self.pos_y)
+    def send_element_selected(self, element):
+        self.dcdc_selected.emit(element, self.location, self.pos_x, self.pos_y)
 
     def set_widget_position(self, location: str, pos_x: int, pos_y: int):
         self.location = location
@@ -130,3 +137,50 @@ class SelectDcdcWidget(QGroupBox):
                 print("DEBUG : Input voltage is not in the DC/DC Scope !")
         else:
             print("DEBUG : Some fields are empty !")
+
+
+class SelectPsuWidget(QGroupBox):
+    # Signal
+    clicked_add_psu = QtCore.pyqtSignal(object)
+
+    def __init__(self, psu, parent=None):
+        super(SelectPsuWidget, self).__init__(parent)
+
+        # Get psu from database
+        self.psu = psu
+
+        # creation of widget & layout
+        self.layout = QGridLayout()
+        self.line_1 = QLabel("PSU " + self.psu.supplier + " " + str(self.psu.current_max))
+        self.line_2 = QLabel(str(self.psu.voltage_input) + " / " + str(self.psu.voltage_output))
+        self.line_3 = QLabel("Jack : " + self.psu.jack)
+        self.line_4 = QLabel(self.psu.equivalence_code)
+        self.name_label = QLabel("Name : ")
+        self.name = QTextEdit()
+        self.add_psu_button = QPushButton("Add")
+
+        # Layout
+        self.layout.addWidget(self.line_1, 0, 0)
+        self.layout.addWidget(self.line_2, 1, 0)
+        self.layout.addWidget(self.line_3, 2, 0)
+        self.layout.addWidget(self.line_4, 3, 0)
+        self.layout.addWidget(self.name_label, 0, 1)
+        self.layout.addWidget(self.name, 0, 2)
+        self.layout.addWidget(self.add_psu_button, 4, 1)
+
+        # Widget settings
+        self.add_psu_button.clicked.connect(self.clicked_button_function)
+        self.name.setFixedSize(150, 25)
+        self.setTitle("PSU")
+        self.setLayout(self.layout)
+
+    def clicked_button_function(self):
+        if self.name.toPlainText() != "":
+            # Add user parameters to the PSU
+            self.psu.name = self.name.toPlainText()
+            # Emit the signal
+            self.clicked_add_psu.emit(self.psu)
+            # Clear parameters
+            self.name.setText("")
+        else:
+            print("DEBUG : The name is empty !")

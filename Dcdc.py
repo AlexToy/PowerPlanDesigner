@@ -19,6 +19,7 @@ class Dcdc(QWidget):
         self.voltage_input_max = voltage_input_max
         self.voltage_output_min = voltage_output_min
         self.voltage_output_max = voltage_output_max
+        self.component = "DCDC"
 
         # Dynamic parameters
         self.name = ""
