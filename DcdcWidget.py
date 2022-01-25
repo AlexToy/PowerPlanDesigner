@@ -16,7 +16,7 @@ class DcdcWidget(QGroupBox):
 
         # Line 1
         self.component_label = QLabel("DCDC ")
-        self.current_max_label = QLabel(self.dcdc.current_max + " A")
+        self.current_max_label = QLabel(str(self.dcdc.current_max) + " A")
         self.h_layout_1.addWidget(self.component_label)
         self.h_layout_1.addWidget(self.current_max_label)
 

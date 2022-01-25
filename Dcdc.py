@@ -7,8 +7,9 @@ class Dcdc(QWidget):
     parameters_is_updated = QtCore.pyqtSignal(str)
     add_child_clicked = QtCore.pyqtSignal(str)
 
-    def __init__(self, ref_component, supplier, current_max, equivalence_code, voltage_input_min, voltage_input_max,
-                 voltage_output_min, voltage_output_max):
+    def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
+                 voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
+                 voltage_output_max: float):
         #  Fixed parameters
         self.ref_component = ref_component
         self.supplier = supplier

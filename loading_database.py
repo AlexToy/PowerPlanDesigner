@@ -6,14 +6,14 @@ from Consumer import Consumer
 
 
 # DCDC DATABASE
-REF_COMPONENT = 1
-SUPPLIER = 2
-CURRENT_MAX = 3
-EQUIVALENCE_CODE = 4
-VOLTAGE_INPUT_MIN = 5
-VOLTAGE_INPUT_MAX = 6
-VOLTAGE_OUTPUT_MIN = 7
-VOLTAGE_OUTPUT_MAX = 8
+DCDC_REF_COMPONENT = 1
+DCDC_SUPPLIER = 2
+DCDC_CURRENT_MAX = 3
+DCDC_EQUIVALENCE_CODE = 4
+DCDC_VOLTAGE_INPUT_MIN = 5
+DCDC_VOLTAGE_INPUT_MAX = 6
+DCDC_VOLTAGE_OUTPUT_MIN = 7
+DCDC_VOLTAGE_OUTPUT_MAX = 8
 
 # PSU DATABASE
 PSU_REF_COMPONENT = 1
@@ -46,14 +46,14 @@ def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
     for _ in sheet_dcdc:
         column = column + 1
         if str(sheet_dcdc.cell(1, column).value) != "None":
-            ref_component = str(sheet_dcdc.cell(REF_COMPONENT, column).value)
-            supplier = str(sheet_dcdc.cell(SUPPLIER, column).value)
-            current_max = str(sheet_dcdc.cell(CURRENT_MAX, column).value)
-            equivalence_code = str(sheet_dcdc.cell(EQUIVALENCE_CODE, column).value)
-            voltage_input_min = str(sheet_dcdc.cell(VOLTAGE_INPUT_MIN, column).value)
-            voltage_input_max = str(sheet_dcdc.cell(VOLTAGE_INPUT_MAX, column).value)
-            voltage_output_min = str(sheet_dcdc.cell(VOLTAGE_OUTPUT_MIN, column).value)
-            voltage_output_max = str(sheet_dcdc.cell(VOLTAGE_OUTPUT_MAX, column).value)
+            ref_component = str(sheet_dcdc.cell(DCDC_REF_COMPONENT, column).value)
+            supplier = str(sheet_dcdc.cell(DCDC_SUPPLIER, column).value)
+            current_max = float(sheet_dcdc.cell(DCDC_CURRENT_MAX, column).value)
+            equivalence_code = str(sheet_dcdc.cell(DCDC_EQUIVALENCE_CODE, column).value)
+            voltage_input_min = float(sheet_dcdc.cell(DCDC_VOLTAGE_INPUT_MIN, column).value)
+            voltage_input_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_INPUT_MAX, column).value)
+            voltage_output_min = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MIN, column).value)
+            voltage_output_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MAX, column).value)
 
             print(ref_component)
             dcdc_list.append(Dcdc(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
