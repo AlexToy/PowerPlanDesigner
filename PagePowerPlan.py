@@ -11,6 +11,7 @@ from ConsumerWidget import ConsumerWidget
 class PagePowerPlan(QWidget):
 
     # Signal
+    element_received = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(PagePowerPlan, self).__init__(parent)
@@ -57,4 +58,5 @@ class PagePowerPlan(QWidget):
 
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
-        print("OK")
+
+        self.element_received.emit(True)

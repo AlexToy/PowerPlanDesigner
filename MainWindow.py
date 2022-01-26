@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
 
         # Add new page
         self.new_power_plan = PagePowerPlan()
+        self.new_power_plan.element_received.connect(self.close_add_element)
 
         # Add toolbar and action
         self.create_actions()
@@ -28,6 +29,10 @@ class MainWindow(QMainWindow):
 
     def open_add_element(self):
         self.add_element.show()
+
+    def close_add_element(self, element_received: bool):
+        if element_received:
+            self.add_element.close()
 
     def create_actions(self):
         self.action_add_element = QAction("DCDC", self)
