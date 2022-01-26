@@ -12,18 +12,13 @@ class AddElement(QTabWidget):
     # sends the page a copy of the chosen element
 
     # Signal
-    dcdc_selected = QtCore.pyqtSignal(object, str, int, int)
+    dcdc_selected = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(AddElement, self).__init__(parent)
 
         # 1 Import the database
         self.list_dcdc_database, self.list_psu_database, self.list_consumer_database = loading_database()
-
-        # Settings variables
-        self.pos_x = 0
-        self.pos_y = 0
-        self.location = ""
 
         # 2 Graphical widget
         # DC/DC
@@ -68,19 +63,14 @@ class AddElement(QTabWidget):
         self.setFixedSize(600, 600)
 
     def send_element_selected(self, element):
-        self.dcdc_selected.emit(element, self.location, self.pos_x, self.pos_y)
-
-    def set_widget_position(self, location: str, pos_x: int, pos_y: int):
-        self.location = location
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+        self.dcdc_selected.emit(element)
 
 
 class SelectDcdcWidget(QGroupBox):
     # Signal
     clicked_add_dcdc = QtCore.pyqtSignal(object)
 
-    def __init__(self, dcdc, parent=None):
+    def __init__(self, dcdc: Dcdc, parent=None):
         super(SelectDcdcWidget, self).__init__(parent)
 
         # Get dcdc from database
@@ -150,7 +140,7 @@ class SelectPsuWidget(QGroupBox):
     # Signal
     clicked_add_psu = QtCore.pyqtSignal(object)
 
-    def __init__(self, psu, parent=None):
+    def __init__(self, psu: Psu, parent=None):
         super(SelectPsuWidget, self).__init__(parent)
 
         # Get psu from database
@@ -197,7 +187,7 @@ class SelectConsumerWidget(QGroupBox):
     # Signal
     clicked_add_consumer = QtCore.pyqtSignal(object)
 
-    def __init__(self, consumer, parent=None):
+    def __init__(self, consumer: Consumer, parent=None):
         super(SelectConsumerWidget, self).__init__(parent)
 
         # Get consumer from database
