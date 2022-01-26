@@ -3,7 +3,6 @@ from PagePowerPlan import PagePowerPlan
 from AddElement import AddElement
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)

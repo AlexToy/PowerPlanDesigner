@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView
 from PyQt5 import QtCore
 from Dcdc import Dcdc
 from Psu import Psu
@@ -8,7 +8,7 @@ from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
 
 
-class PagePowerPlan(QWidget):
+class PagePowerPlan(QGraphicsView):
 
     # Signal
     element_received = QtCore.pyqtSignal(bool)
@@ -17,11 +17,13 @@ class PagePowerPlan(QWidget):
         super(PagePowerPlan, self).__init__(parent)
 
         # Widget for pagePowerPlan
-        self.layout = QGridLayout()
+        self.scene = QGraphicsScene()
+        self.scene.setSceneRect(0, 0, 500, 500);
 
+        self.setScene(self.scene)
+
+        # Variables
         self.list_element_widget = []
-
-        self.setLayout(self.layout)
 
     def add_new_element(self, element):
         # Find which is the element
@@ -58,5 +60,8 @@ class PagePowerPlan(QWidget):
 
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
+
+        # Add the new element on the page
+        self.scene.addItem(new_element_widget)
 
         self.element_received.emit(True)

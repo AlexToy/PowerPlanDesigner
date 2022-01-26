@@ -1,12 +1,18 @@
-from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel
+from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel, QGraphicsProxyWidget
+from PyQt5.QtCore import QPointF
 from Consumer import Consumer
 
 
-class ConsumerWidget(QGroupBox):
+INITIAL_POS_X = 50
+INITIAL_POS_Y = 50
+
+
+class ConsumerWidget(QGraphicsProxyWidget):
     def __init__(self, consumer: Consumer, parent=None):
         super(ConsumerWidget, self).__init__(parent)
 
         self.consumer = consumer
+        self.grp_box = QGroupBox()
 
         # creation of widget & layout
         self.layout = QGridLayout()
@@ -30,6 +36,25 @@ class ConsumerWidget(QGroupBox):
         self.layout.addWidget(self.power_input_label, 7, 0)
 
         # Widget settings
-        self.setTitle(str(self.consumer.name))
-        self.setLayout(self.layout)
-        self.setFixedSize(150, 200)
+        self.grp_box.setTitle(str(self.consumer.name))
+        self.grp_box.setLayout(self.layout)
+        self.grp_box.setFixedSize(150, 200)
+
+        self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
+        self.setWidget(self.grp_box)
+
+    def mousePressEvent(self, event):
+        pass
+
+    def mouseMoveEvent(self, event):
+        orig_cursor_position = event.lastScenePos()
+        updated_cursor_position = event.scenePos()
+
+        orig_position = self.scenePos()
+
+        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+
+    def mouseReleaseEvent(self, event):
+        pass

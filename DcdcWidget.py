@@ -1,12 +1,18 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget
+from PyQt5.QtCore import QPointF
 from Dcdc import Dcdc
 
 
-class DcdcWidget(QGroupBox):
+INITIAL_POS_X = 50
+INITIAL_POS_Y = 50
+
+
+class DcdcWidget(QGraphicsProxyWidget):
     def __init__(self, dcdc: Dcdc, parent=None):
         super(DcdcWidget, self).__init__(parent)
 
         self.dcdc = dcdc
+        self.grp_box = QGroupBox()
 
         # Layouts
         self.v_layout = QVBoxLayout()
@@ -67,9 +73,25 @@ class DcdcWidget(QGroupBox):
         self.v_layout.addLayout(self.grid_layout)
 
         # Widget Settings
-        self.setTitle(str(self.dcdc.name))
-        self.setLayout(self.v_layout)
-        self.setFixedSize(150, 200)
+        self.grp_box.setTitle(str(self.dcdc.name))
+        self.grp_box.setLayout(self.v_layout)
+        self.grp_box.setFixedSize(150, 200)
 
-    def mousePressEvent(self, event) -> None:
-        print(event)
+        self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
+        self.setWidget(self.grp_box)
+
+    def mousePressEvent(self, event):
+        pass
+
+    def mouseMoveEvent(self, event):
+        orig_cursor_position = event.lastScenePos()
+        updated_cursor_position = event.scenePos()
+
+        orig_position = self.scenePos()
+
+        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+
+    def mouseReleaseEvent(self, event):
+        pass
