@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QAction, QToolBar
 from PagePowerPlan import PagePowerPlan
 
 
@@ -11,3 +11,5 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.new_power_plan)
         self.setWindowTitle("Power Plan Designer")
         self.resize(400, 200)
+
+    blaljblabla

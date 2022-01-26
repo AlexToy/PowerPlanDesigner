@@ -33,11 +33,10 @@ class PagePowerPlan(QWidget):
         self.button_bottom.pos_x = -1
         self.button_bottom.pos_y = 1
 
-        # Add element page
+        # Create AddElement() page
         self.add_element = AddElement()
         self.add_element.dcdc_selected.connect(self.add_new_element)
 
-        self.list_element = []
         self.list_element_widget = []
 
         self.setLayout(self.layout)
@@ -104,8 +103,9 @@ class PagePowerPlan(QWidget):
         # Add the widget to its new position
         self.layout.addWidget(dcdc_widget, pos_y, pos_x)
 
+
 class AddElementButton(QPushButton):
-    #Signal
+    # Signal
     clicked_button = QtCore.pyqtSignal(str, int, int)
 
     def __init__(self, widget_location, parent=None):
@@ -121,3 +121,5 @@ class AddElementButton(QPushButton):
 
     def clicked_button_function(self):
         self.clicked_button.emit(self.widget_location, self.pos_x, self.pos_y)
+
+

@@ -70,3 +70,6 @@ class DcdcWidget(QGroupBox):
         self.setTitle(str(self.dcdc.name))
         self.setLayout(self.v_layout)
         self.setFixedSize(150, 200)
+
+    def mousePressEvent(self, event) -> None:
+        print(event)
