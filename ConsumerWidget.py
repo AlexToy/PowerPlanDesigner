@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel, QGraphicsProxyWidget
-from PyQt5.QtCore import QPointF
+from PyQt5.QtCore import QPointF, Qt
 from Consumer import Consumer
 
 
@@ -19,7 +19,7 @@ class ConsumerWidget(QGraphicsProxyWidget):
         self.ref_component_label = QLabel(self.consumer.ref_component)
         self.info_label = QLabel(self.consumer.info)
         self.equivalence_code_label = QLabel(self.consumer.equivalence_code)
-        self.line_label = QLabel("----------------------------------")
+        self.line_label = QLabel("------------")
         self.input_label = QLabel("Input")
         self.voltage_input_label = QLabel(str(self.consumer.voltage_input) + " V")
         self.current_input_label = QLabel(str(self.consumer.current_input) + " A")
@@ -38,13 +38,17 @@ class ConsumerWidget(QGraphicsProxyWidget):
         # Widget settings
         self.grp_box.setTitle(str(self.consumer.name))
         self.grp_box.setLayout(self.layout)
-        self.grp_box.setFixedSize(150, 200)
+        # self.grp_box.setFixedSize(150, 200)
 
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)
 
     def mousePressEvent(self, event):
-        pass
+        if event.button() == Qt.RightButton:
+            event.setAccepted(True)
+        elif event.button() == Qt.LeftButton:
+            event.setAccepted(False)
+            print("clic")
 
     def mouseMoveEvent(self, event):
         orig_cursor_position = event.lastScenePos()

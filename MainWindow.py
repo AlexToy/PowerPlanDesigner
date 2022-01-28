@@ -1,15 +1,21 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QToolBar
+from PyQt5 import QtCore
 from PagePowerPlan import PagePowerPlan
 from AddElement import AddElement
 
 
 class MainWindow(QMainWindow):
+
+    # Signal
+    add_new_parent_child_connection = QtCore.pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
 
         # Add new page
         self.new_power_plan = PagePowerPlan()
         self.new_power_plan.element_received.connect(self.close_add_element)
+        self.add_new_parent_child_connection.connect(self.new_power_plan.set_add_child_parent_connection)
 
         # Add toolbar and action
         self.create_actions()
@@ -23,9 +29,6 @@ class MainWindow(QMainWindow):
         self.add_element = AddElement()
         self.add_element.dcdc_selected.connect(self.new_power_plan.add_new_element)
 
-        # Close add_element window
-        self.add_element.close()
-
     def open_add_element(self):
         self.add_element.show()
 
@@ -33,12 +36,18 @@ class MainWindow(QMainWindow):
         if element_received:
             self.add_element.close()
 
+    def new_parent_child_connexion(self):
+        self.add_new_parent_child_connection.emit(True)
+
     def create_actions(self):
-        self.action_add_element = QAction("DCDC", self)
+        self.action_add_element = QAction("Add Component", self)
         self.action_add_element.triggered.connect(self.open_add_element)
+        self.action_parent_child_connexion = QAction("Add supply", self)
+        self.action_parent_child_connexion.triggered.connect(self.new_parent_child_connexion)
 
     def create_toolbar(self):
         edit_toolbar = QToolBar("Edit", self)
         self.addToolBar(edit_toolbar)
         edit_toolbar.addAction(self.action_add_element)
+        edit_toolbar.addAction(self.action_parent_child_connexion)
 

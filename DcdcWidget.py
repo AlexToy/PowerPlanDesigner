@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget
-from PyQt5.QtCore import QPointF
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget, QPushButton
+from PyQt5.QtCore import QPointF, Qt
+from PyQt5 import QtCore
 from Dcdc import Dcdc
 
 
@@ -8,11 +9,17 @@ INITIAL_POS_Y = 50
 
 
 class DcdcWidget(QGraphicsProxyWidget):
+
+    # Signal
+    dcdc_selected = QtCore.pyqtSignal(object)
+
     def __init__(self, dcdc: Dcdc, parent=None):
         super(DcdcWidget, self).__init__(parent)
 
         self.dcdc = dcdc
         self.grp_box = QGroupBox()
+
+        self.move_grpbox = False
 
         # Layouts
         self.v_layout = QVBoxLayout()
@@ -75,23 +82,29 @@ class DcdcWidget(QGraphicsProxyWidget):
         # Widget Settings
         self.grp_box.setTitle(str(self.dcdc.name))
         self.grp_box.setLayout(self.v_layout)
-        self.grp_box.setFixedSize(150, 200)
+        # self.grp_box.setFixedSize(150, 200)
 
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)
 
     def mousePressEvent(self, event):
-        pass
+        if event.button() == Qt.RightButton:
+            self.move_grpbox = True
+        elif event.button() == Qt.LeftButton:
+            self.move_grpbox = False
+            # Send to the page power plan the widget
+            self.dcdc_selected.emit(self)
 
     def mouseMoveEvent(self, event):
-        orig_cursor_position = event.lastScenePos()
-        updated_cursor_position = event.scenePos()
+        if self.move_grpbox:
+            orig_cursor_position = event.lastScenePos()
+            updated_cursor_position = event.scenePos()
 
-        orig_position = self.scenePos()
+            orig_position = self.scenePos()
 
-        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+            updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
 
     def mouseReleaseEvent(self, event):
         pass

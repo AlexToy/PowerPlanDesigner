@@ -63,7 +63,7 @@ class PsuWidget(QGraphicsProxyWidget):
         # Widget Settings
         self.grp_box.setTitle(str(self.psu.name))
         self.grp_box.setLayout(self.layout)
-        self.grp_box.setFixedSize(150, 200)
+        # self.grp_box.setFixedSize(150, 200)
 
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)

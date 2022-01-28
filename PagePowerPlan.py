@@ -9,7 +9,6 @@ from ConsumerWidget import ConsumerWidget
 
 
 class PagePowerPlan(QGraphicsView):
-
     # Signal
     element_received = QtCore.pyqtSignal(bool)
 
@@ -24,6 +23,11 @@ class PagePowerPlan(QGraphicsView):
 
         # Variables
         self.list_element_widget = []
+
+        self.widget_parent = 0
+        self.widget_child = 0
+        self.index_widget = 0
+        self.add_child_parent_connection = False
 
     def add_new_element(self, element):
         # Find which is the element
@@ -61,7 +65,36 @@ class PagePowerPlan(QGraphicsView):
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
 
+        new_element_widget.dcdc_selected.connect(self.get_clicked_widget)
+
         # Add the new element on the page
         self.scene.addItem(new_element_widget)
 
+        # If element is received emit a signal to the main window to close the window
         self.element_received.emit(True)
+
+    def set_add_child_parent_connection(self, state: bool):
+        self.add_child_parent_connection = state
+        if self.add_child_parent_connection:
+            print("DEBUG : START add child ...")
+        elif not self.add_child_parent_connection:
+            print("DEBUG : End add child ...")
+
+    def get_clicked_widget(self, widget):
+        if self.add_child_parent_connection:
+            self.index_widget = self.index_widget + 1
+            if self.index_widget == 1:
+                self.widget_parent = widget
+                print("Parent : " + str(widget))
+            elif self.index_widget == 2 and widget != self.widget_parent:
+                self.widget_child = widget
+                self.index_widget = 0
+                print("Child : " + str(widget))
+                print("Run ad child")
+                self.set_add_child_parent_connection(False)
+            else:
+                self.index_widget = 0
+                self.widget_parent = 0
+                self.widget_child = 0
+                self.set_add_child_parent_connection(False)
+                print("DEBUG : Reset parent & child")
