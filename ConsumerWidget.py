@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel, QGraphicsProxyWidget
 from PyQt5.QtCore import QPointF, Qt
+from PyQt5 import QtCore
 from Consumer import Consumer
 
 
@@ -8,11 +9,18 @@ INITIAL_POS_Y = 50
 
 
 class ConsumerWidget(QGraphicsProxyWidget):
+
+    # Signal
+    widget_selected = QtCore.pyqtSignal(object)
+
     def __init__(self, consumer: Consumer, parent=None):
         super(ConsumerWidget, self).__init__(parent)
 
         self.consumer = consumer
         self.grp_box = QGroupBox()
+        self.component = "Consumer"
+
+        self.move_grpbox = False
 
         # creation of widget & layout
         self.layout = QGridLayout()
@@ -22,8 +30,8 @@ class ConsumerWidget(QGraphicsProxyWidget):
         self.line_label = QLabel("------------")
         self.input_label = QLabel("Input")
         self.voltage_input_label = QLabel(str(self.consumer.voltage_input) + " V")
-        self.current_input_label = QLabel(str(self.consumer.current_input) + " A")
-        self.power_input_label = QLabel(str(self.consumer.power_input) + " W")
+        self.current_input_label = QLabel(str(self.consumer.current_input) + " mA")
+        self.power_input_label = QLabel(str(self.consumer.power_input) + " mW")
 
         # Layout
         self.layout.addWidget(self.ref_component_label, 0, 0)
@@ -43,22 +51,35 @@ class ConsumerWidget(QGraphicsProxyWidget):
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)
 
+    def add_parent(self, element):
+        if element.component == "DCDC":
+            self.consumer.add_parent(element.dcdc)
+        elif element.component == "Psu":
+            self.consumer.add_parent(element.psu)
+        elif element.component == "Consumer":
+            self.consumer.add_parent(element.consumer)
+
+    def add_child(self, element):
+        print("DEBUG : ConsumerWidget cannot have children !")
+
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
-            event.setAccepted(True)
+            self.move_grpbox = True
         elif event.button() == Qt.LeftButton:
-            event.setAccepted(False)
-            print("clic")
+            self.move_grpbox = False
+            # Send to the page power plan the widget
+            self.widget_selected.emit(self)
 
     def mouseMoveEvent(self, event):
-        orig_cursor_position = event.lastScenePos()
-        updated_cursor_position = event.scenePos()
+        if self.move_grpbox:
+            orig_cursor_position = event.lastScenePos()
+            updated_cursor_position = event.scenePos()
 
-        orig_position = self.scenePos()
+            orig_position = self.scenePos()
 
-        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+            updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
 
     def mouseReleaseEvent(self, event):
         pass

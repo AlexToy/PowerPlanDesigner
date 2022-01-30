@@ -11,13 +11,15 @@ INITIAL_POS_Y = 50
 class DcdcWidget(QGraphicsProxyWidget):
 
     # Signal
-    dcdc_selected = QtCore.pyqtSignal(object)
+    widget_selected = QtCore.pyqtSignal(object)
 
     def __init__(self, dcdc: Dcdc, parent=None):
         super(DcdcWidget, self).__init__(parent)
 
         self.dcdc = dcdc
+        self.dcdc.update_parameters.connect(self.update_graphics_parameters)
         self.grp_box = QGroupBox()
+        self.component = "DCDC"
 
         self.move_grpbox = False
 
@@ -49,8 +51,8 @@ class DcdcWidget(QGraphicsProxyWidget):
         # Input
         self.input_label = QLabel("Input")
         self.voltage_in_label = QLabel(str(self.dcdc.voltage_input) + " V")
-        self.current_in_label = QLabel(str(self.dcdc.current_input) + " A")
-        self.power_in_label = QLabel(str(self.dcdc.power_input) + " W")
+        self.current_in_label = QLabel(str(self.dcdc.current_input) + " mA")
+        self.power_in_label = QLabel(str(self.dcdc.power_input) + " mW")
         self.grid_layout.addWidget(self.input_label, 0, 0)
         self.grid_layout.addWidget(self.voltage_in_label, 1, 0)
         self.grid_layout.addWidget(self.current_in_label, 2, 0)
@@ -65,8 +67,8 @@ class DcdcWidget(QGraphicsProxyWidget):
         # Output
         self.output_label = QLabel("Output")
         self.voltage_out_label = QLabel(str(self.dcdc.voltage_output) + " V")
-        self.current_out_label = QLabel(str(self.dcdc.current_output) + " A")
-        self.power_out_label = QLabel(str(self.dcdc.power_output) + " W")
+        self.current_out_label = QLabel(str(self.dcdc.current_output) + " mA")
+        self.power_out_label = QLabel(str(self.dcdc.power_output) + " mW")
         self.grid_layout.addWidget(self.output_label, 0, 2)
         self.grid_layout.addWidget(self.voltage_out_label, 1, 2)
         self.grid_layout.addWidget(self.current_out_label, 2, 2)
@@ -87,13 +89,49 @@ class DcdcWidget(QGraphicsProxyWidget):
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)
 
+    def add_parent(self, element):
+        if element.component == "DCDC":
+            self.dcdc.add_parent(element.dcdc)
+        elif element.component == "Psu":
+            self.dcdc.add_parent(element.psu)
+        elif element.component == "Consumer":
+            self.dcdc.add_parent(element.consumer)
+
+    def add_child(self, element):
+        if element.component == "DCDC":
+            self.dcdc.add_child(element.dcdc)
+        elif element.component == "Psu":
+            self.dcdc.add_child(element.psu)
+        elif element.component == "Consumer":
+            self.dcdc.add_child(element.consumer)
+
+        self.update_graphics_parameters()
+
+    def get_children(self):
+        return self.dcdc.children
+
+    def update_graphics_parameters(self):
+        # Input parameters
+        self.voltage_in_label.setText(str(self.dcdc.voltage_input) + " V")
+        self.current_in_label.setText(str(self.dcdc.current_input) + " mA")
+        self.power_in_label.setText(str(self.dcdc.power_input) + " mW")
+
+        # Output parameters
+        self.voltage_out_label.setText(str(self.dcdc.voltage_output) + " V")
+        self.current_out_label.setText(str(self.dcdc.current_output) + " mA")
+        self.power_out_label.setText(str(self.dcdc.power_output) + " mW")
+
+        # Update parent parameters
+        if self.dcdc.parent != 0:
+            self.dcdc.parent.update_input_output_parameters()
+
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
             self.move_grpbox = True
         elif event.button() == Qt.LeftButton:
             self.move_grpbox = False
             # Send to the page power plan the widget
-            self.dcdc_selected.emit(self)
+            self.widget_selected.emit(self)
 
     def mouseMoveEvent(self, event):
         if self.move_grpbox:

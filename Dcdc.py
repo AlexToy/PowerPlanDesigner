@@ -4,12 +4,13 @@ from PyQt5 import QtCore
 
 class Dcdc(QWidget):
     # Signals
-    parameters_is_updated = QtCore.pyqtSignal(str)
     add_child_clicked = QtCore.pyqtSignal(str)
+    update_parameters = QtCore.pyqtSignal()
 
     def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
                  voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
-                 voltage_output_max: float):
+                 voltage_output_max: float, parent=None):
+        super(Dcdc, self).__init__(parent)
         #  Fixed parameters
         self.ref_component = ref_component
         self.supplier = supplier
@@ -37,8 +38,12 @@ class Dcdc(QWidget):
         self.children = []
 
     def add_parent(self, parent):
-        self.parent = parent
-        print("DEBUG : add " + parent.name + "as parent to " + self.name)
+        if float(self.voltage_input) == float(parent.voltage_output):
+            self.parent = parent
+            print("DEBUG : add " + parent.name + "as parent to " + self.name)
+        else:
+            print("DEBUG : " + str(self.voltage_input) + "'s output voltage is different from " + str(
+                parent.voltage_output) + "'s")
 
     def remove_parent(self):
         print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
@@ -86,8 +91,8 @@ class Dcdc(QWidget):
         self.power_input = float(self.power_output) * (float(self.efficiency) / 100)
         self.current_input = float(self.power_input) / float(self.voltage_input)
 
-        # Tell to the parent that the parameters have been changed
-        self.parameters_is_updated.emit(self.parent.name)
+        # Update graphics parameters
+        self.update_parameters.emit()
 
     def print_parameters(self):
         print(self.name)

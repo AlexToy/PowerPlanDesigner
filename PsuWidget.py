@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel, QGraphicsProxyWidget
-from PyQt5.QtCore import QPointF
+from PyQt5.QtCore import QPointF, Qt
+from PyQt5 import QtCore
 from Psu import Psu
 
 
@@ -8,11 +9,19 @@ INITIAL_POS_Y = 50
 
 
 class PsuWidget(QGraphicsProxyWidget):
+
+    # Signal
+    widget_selected = QtCore.pyqtSignal(object)
+
     def __init__(self, psu: Psu, parent=None):
         super(PsuWidget, self).__init__(parent)
 
         self.psu = psu
+        self.psu.update_parameters.connect(self.update_graphics_parameters)
         self.grp_box = QGroupBox()
+        self.component = "Psu"
+
+        self.move_grpbox = False
 
         self.layout = QGridLayout()
 
@@ -53,11 +62,11 @@ class PsuWidget(QGraphicsProxyWidget):
         self.layout.addWidget(self.voltage_output, 6, 0)
 
         # Line 8
-        self.current_output = QLabel(str(self.psu.current_output) + " A")
+        self.current_output = QLabel(str(self.psu.current_output) + " mA")
         self.layout.addWidget(self.current_output, 7, 0)
 
         # Line 9
-        self.power_output = QLabel(str(self.psu.power_output) + " P")
+        self.power_output = QLabel(str(self.psu.power_output) + " mW")
         self.layout.addWidget(self.power_output, 8, 0)
 
         # Widget Settings
@@ -68,18 +77,43 @@ class PsuWidget(QGraphicsProxyWidget):
         self.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.setWidget(self.grp_box)
 
+    def add_parent(self, element):
+        print("DEBUG : ConsumerWidget cannot have children !")
+
+    def add_child(self, element):
+        if element.component == "DCDC":
+            self.psu.add_child(element.dcdc)
+        elif element.component == "Psu":
+            self.psu.add_child(element.psu)
+        elif element.component == "Consumer":
+            self.psu.add_child(element.consumer)
+
+        self.update_graphics_parameters()
+
+    def update_graphics_parameters(self):
+        # Output parameters
+        self.voltage_output.setText(str(self.psu.voltage_output) + " V")
+        self.current_output.setText(str(self.psu.current_output) + " mA")
+        self.power_output.setText(str(self.psu.power_output) + " mW")
+
     def mousePressEvent(self, event):
-        pass
+        if event.button() == Qt.RightButton:
+            self.move_grpbox = True
+        elif event.button() == Qt.LeftButton:
+            self.move_grpbox = False
+            # Send to the page power plan the widget
+            self.widget_selected.emit(self)
 
     def mouseMoveEvent(self, event):
-        orig_cursor_position = event.lastScenePos()
-        updated_cursor_position = event.scenePos()
+        if self.move_grpbox:
+            orig_cursor_position = event.lastScenePos()
+            updated_cursor_position = event.scenePos()
 
-        orig_position = self.scenePos()
+            orig_position = self.scenePos()
 
-        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+            updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
 
     def mouseReleaseEvent(self, event):
         pass

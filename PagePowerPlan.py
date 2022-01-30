@@ -65,7 +65,7 @@ class PagePowerPlan(QGraphicsView):
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
 
-        new_element_widget.dcdc_selected.connect(self.get_clicked_widget)
+        new_element_widget.widget_selected.connect(self.get_clicked_widget)
 
         # Add the new element on the page
         self.scene.addItem(new_element_widget)
@@ -74,6 +74,8 @@ class PagePowerPlan(QGraphicsView):
         self.element_received.emit(True)
 
     def set_add_child_parent_connection(self, state: bool):
+        # This function is used to start or end a child/parent add
+        # It is connected to "Supply" toolbar button on MainWindow
         self.add_child_parent_connection = state
         if self.add_child_parent_connection:
             print("DEBUG : START add child ...")
@@ -81,17 +83,34 @@ class PagePowerPlan(QGraphicsView):
             print("DEBUG : End add child ...")
 
     def get_clicked_widget(self, widget):
+        # This function is used to create a connexion between two widgets if
+        # the "supply" toolbar button has been clicked
+        # It is called by a click on a widget (signal : widget_selected())
         if self.add_child_parent_connection:
             self.index_widget = self.index_widget + 1
+            # First click : select the parent widget
             if self.index_widget == 1:
                 self.widget_parent = widget
                 print("Parent : " + str(widget))
+            # Second click : select the child widget
             elif self.index_widget == 2 and widget != self.widget_parent:
                 self.widget_child = widget
                 self.index_widget = 0
                 print("Child : " + str(widget))
-                print("Run ad child")
+
+                print("Run add child")
+                for element in self.list_element_widget:
+                    if element == self.widget_parent:
+                        parent = element
+                    elif element == self.widget_child:
+                        child = element
+                # If this connection doesn't already exist, add parent and child
+                # TODO : Create the if, not functional for the moment
+                parent.add_child(child)
+                child.add_parent(parent)
+
                 self.set_add_child_parent_connection(False)
+
             else:
                 self.index_widget = 0
                 self.widget_parent = 0
