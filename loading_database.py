@@ -1,6 +1,6 @@
 import openpyxl
 from typing import List
-from Dcdc import Dcdc
+from DcdcWidget import DcdcWidget
 from Psu import Psu
 from Consumer import Consumer
 
@@ -35,7 +35,7 @@ CONSUMER_CURRENT_INPUT = 6
 FILE_DATABASE = "DATA_BASE.xlsx"
 
 
-def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
+def loading_database() -> List[DcdcWidget] and List[Psu] and List[Consumer]:
 
     input_file = openpyxl.load_workbook(FILE_DATABASE, read_only=True)
     for sheet in input_file:
@@ -64,7 +64,7 @@ def loading_database() -> List[Dcdc] and List[Psu] and List[Consumer]:
             voltage_output_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MAX, column).value)
 
             print(ref_component)
-            dcdc_list.append(Dcdc(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
+            dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
                                   voltage_input_max, voltage_output_min, voltage_output_max))
 
     # Loading PSU DATABASE

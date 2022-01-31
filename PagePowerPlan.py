@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView, QGraphicsRectItem
 from PyQt5 import QtCore
-from Dcdc import Dcdc
+from DcdcWidget import DcdcWidget
 from Psu import Psu
 from Consumer import Consumer
 from DcdcWidget import DcdcWidget
@@ -36,15 +36,14 @@ class PagePowerPlan(QGraphicsView):
 
             # Create a copy from a database dcdc
             dcdc = element
-            new_dcdc = Dcdc(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
+            new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
                             dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
                             dcdc.voltage_output_max)
             new_dcdc.voltage_input = dcdc.voltage_input
             new_dcdc.voltage_output = dcdc.voltage_output
             new_dcdc.name = dcdc.name
 
-            # Create the graphical widget of dcdc
-            new_element_widget = DcdcWidget(new_dcdc)
+            new_element_widget = new_dcdc
 
         elif element.component == "PSU":
             psu = element
@@ -69,7 +68,7 @@ class PagePowerPlan(QGraphicsView):
         new_element_widget.widget_selected.connect(self.get_clicked_widget)
 
         # Add the new element on the page
-        self.scene.addItem(new_element_widget)
+        self.scene.addItem(new_element_widget.ui_init())
 
         # If element is received emit a signal to the main window to close the window
         self.element_received.emit(True)

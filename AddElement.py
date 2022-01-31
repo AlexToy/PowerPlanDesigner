@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGr
     QLabel, QVBoxLayout
 from PyQt5 import QtCore
 from loading_database import loading_database
-from Dcdc import Dcdc
+from DcdcWidget import DcdcWidget
 from Psu import Psu
 from Consumer import Consumer
 
@@ -70,7 +70,7 @@ class SelectDcdcWidget(QGroupBox):
     # Signal
     clicked_add_dcdc = QtCore.pyqtSignal(object)
 
-    def __init__(self, dcdc: Dcdc, parent=None):
+    def __init__(self, dcdc: DcdcWidget, parent=None):
         super(SelectDcdcWidget, self).__init__(parent)
 
         # Get dcdc from database
