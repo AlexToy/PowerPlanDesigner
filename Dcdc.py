@@ -79,6 +79,14 @@ class Dcdc(QWidget):
         else:
             print("DEBUG : " + self.name + " has no children !")
 
+    def remove_all_children(self):
+        if len(self.children) != 0:
+            for child in self.children:
+                self.children.remove(child)
+            print("DEBUG : All children removed !")
+        else:
+            print("DEBUG : Any children in the list ! ")
+
     def update_input_output_parameters(self):
         # Editing output parameters
         self.power_output = 0

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView
+from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView, QGraphicsRectItem
 from PyQt5 import QtCore
 from Dcdc import Dcdc
 from Psu import Psu
@@ -28,6 +28,7 @@ class PagePowerPlan(QGraphicsView):
         self.widget_child = 0
         self.index_widget = 0
         self.add_child_parent_connection = False
+        self.delete_element = False
 
     def add_new_element(self, element):
         # Find which is the element
@@ -73,10 +74,27 @@ class PagePowerPlan(QGraphicsView):
         # If element is received emit a signal to the main window to close the window
         self.element_received.emit(True)
 
+    def set_delete_element(self, state: bool):
+        # This function is used to start or finish  deleting a widget
+        # It is connected to "Delete" toolbar button on MainWindow
+        self.delete_element = state
+        # Two toolbar button can not be used at the same time
+        if self.add_child_parent_connection:
+            self.set_add_child_parent_connection(False)
+
+        if self.delete_element:
+            print("DEBUG : START delete element ...")
+        elif not self.delete_element:
+            print("DEBUG : END delete element ...")
+
     def set_add_child_parent_connection(self, state: bool):
         # This function is used to start or end a child/parent add
         # It is connected to "Supply" toolbar button on MainWindow
         self.add_child_parent_connection = state
+        # Two toolbar button can not be used at the same time
+        if self.delete_element:
+            self.set_delete_element(False)
+
         if self.add_child_parent_connection:
             print("DEBUG : START add child ...")
         elif not self.add_child_parent_connection:
@@ -117,3 +135,17 @@ class PagePowerPlan(QGraphicsView):
                 self.widget_child = 0
                 self.set_add_child_parent_connection(False)
                 print("DEBUG : Reset parent & child")
+
+        elif self.delete_element:
+            print("Delete element")
+            # 1 Remove all children of the widget
+            widget.remove_all_children()
+            # 2 Remove this widget as a child to its parent
+            if widget.get_parent() != 0:
+                widget.get_parent().remove_child(widget)
+            # 1 Supprimer les connections
+            # 2 Supprimer de la scene
+            # 3 Supprimer le DCDC
+            # 4 Supprimer le widget
+
+            self.set_delete_element(False)

@@ -110,6 +110,16 @@ class DcdcWidget(QGraphicsProxyWidget):
     def get_children(self):
         return self.dcdc.children
 
+    def remove_all_children(self):
+        self.dcdc.remove_all_children()
+
+    def get_parent(self):
+        if self.dcdc.parent != 0:
+            return self.dcdc.parent
+        else:
+            print("DEBUG : No parent ")
+            return 0
+
     def update_graphics_parameters(self):
         # Input parameters
         self.voltage_in_label.setText(str(self.dcdc.voltage_input) + " V")
