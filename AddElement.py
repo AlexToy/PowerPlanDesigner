@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QTextEdit, \
+from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, \
     QLabel, QVBoxLayout
+from PyQt5.QtGui import QDoubleValidator
 from PyQt5 import QtCore
+from PyQt5.QtCore import QLocale
 from loading_database import loading_database
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
@@ -81,12 +83,13 @@ class SelectDcdcWidget(QGroupBox):
         self.layout_2 = QGridLayout()
         self.add_dcdc_button = QPushButton("Add")
         self.name_label = QLabel("Name : ")
-        self.name = QTextEdit()
+        self.name = QLineEdit()
         self.v_in_label = QLabel("Vin : ")
-        self.v_in = QTextEdit()
+        self.v_in = QLineEdit()
         self.v_out_label = QLabel("Vout : ")
-        self.v_out = QTextEdit()
+        self.v_out = QLineEdit()
         self.text = QLabel("Info DCDC")
+        self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
         self.layout_2.addWidget(self.name_label, 0, 0)
@@ -104,21 +107,23 @@ class SelectDcdcWidget(QGroupBox):
         # self.add_dcdc_button.setFixedSize(150, 25)
         self.name.setFixedSize(150, 25)
         self.v_in.setFixedSize(150, 25)
+        # self.v_in.setValidator(self.label_restriction)
         self.v_out.setFixedSize(150, 25)
+        # self.v_out.setValidator(self.label_restriction)
         self.setTitle(self.dcdc_copy.ref_component)
         self.setLayout(self.layout)
 
     def clicked_button_function(self):
-        if self.name.toPlainText() != "" and self.v_in.toPlainText() != "" and self.v_out.toPlainText() != "":
+        if self.name.displayText() != "" and self.v_in.displayText() != "" and self.v_out.displayText() != "":
 
-            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.toPlainText()) <= float(self.dcdc_copy.voltage_input_max):
+            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.displayText()) <= float(self.dcdc_copy.voltage_input_max):
 
-                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.toPlainText()) <= float(self.dcdc_copy.voltage_output_max):
+                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.displayText()) <= float(self.dcdc_copy.voltage_output_max):
 
                     # Add user parameters to the DC/DC
-                    self.dcdc_copy.voltage_input = self.v_in.toPlainText()
-                    self.dcdc_copy.voltage_output = self.v_out.toPlainText()
-                    self.dcdc_copy.name = self.name.toPlainText()
+                    self.dcdc_copy.voltage_input = self.v_in.displayText()
+                    self.dcdc_copy.voltage_output = self.v_out.displayText()
+                    self.dcdc_copy.name = self.name.displayText()
 
                     # Send dcdc_selected signal
                     self.clicked_add_dcdc.emit(self.dcdc_copy)
@@ -153,7 +158,7 @@ class SelectPsuWidget(QGroupBox):
         self.line_3 = QLabel("Jack : " + self.psu.jack)
         self.line_4 = QLabel(self.psu.equivalence_code)
         self.name_label = QLabel("Name : ")
-        self.name = QTextEdit()
+        self.name = QLineEdit()
         self.add_psu_button = QPushButton("Add")
 
         # Layout
@@ -172,9 +177,9 @@ class SelectPsuWidget(QGroupBox):
         self.setLayout(self.layout)
 
     def clicked_button_function(self):
-        if self.name.toPlainText() != "":
+        if self.name.displayText() != "":
             # Add user parameters to the PSU
-            self.psu.name = self.name.toPlainText()
+            self.psu.name = self.name.displayText()
             # Emit the signal
             self.clicked_add_psu.emit(self.psu)
             # Clear parameters
