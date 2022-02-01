@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGr
 from PyQt5 import QtCore
 from loading_database import loading_database
 from DcdcWidget import DcdcWidget
-from Psu import Psu
-from Consumer import Consumer
+from PsuWidget import PsuWidget
+from ConsumerWidget import ConsumerWidget
 
 
 class AddElement(QTabWidget):
@@ -140,7 +140,7 @@ class SelectPsuWidget(QGroupBox):
     # Signal
     clicked_add_psu = QtCore.pyqtSignal(object)
 
-    def __init__(self, psu: Psu, parent=None):
+    def __init__(self, psu: PsuWidget, parent=None):
         super(SelectPsuWidget, self).__init__(parent)
 
         # Get psu from database
@@ -187,7 +187,7 @@ class SelectConsumerWidget(QGroupBox):
     # Signal
     clicked_add_consumer = QtCore.pyqtSignal(object)
 
-    def __init__(self, consumer: Consumer, parent=None):
+    def __init__(self, consumer: ConsumerWidget, parent=None):
         super(SelectConsumerWidget, self).__init__(parent)
 
         # Get consumer from database

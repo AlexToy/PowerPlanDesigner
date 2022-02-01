@@ -1,8 +1,8 @@
 import openpyxl
 from typing import List
 from DcdcWidget import DcdcWidget
-from Psu import Psu
-from Consumer import Consumer
+from PsuWidget import PsuWidget
+from ConsumerWidget import ConsumerWidget
 
 
 # DCDC DATABASE
@@ -35,7 +35,7 @@ CONSUMER_CURRENT_INPUT = 6
 FILE_DATABASE = "DATA_BASE.xlsx"
 
 
-def loading_database() -> List[DcdcWidget] and List[Psu] and List[Consumer]:
+def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[ConsumerWidget]:
 
     input_file = openpyxl.load_workbook(FILE_DATABASE, read_only=True)
     for sheet in input_file:
@@ -65,7 +65,7 @@ def loading_database() -> List[DcdcWidget] and List[Psu] and List[Consumer]:
 
             print(ref_component)
             dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
-                                  voltage_input_max, voltage_output_min, voltage_output_max))
+                             voltage_input_max, voltage_output_min, voltage_output_max))
 
     # Loading PSU DATABASE
     psu_list = []
@@ -81,8 +81,8 @@ def loading_database() -> List[DcdcWidget] and List[Psu] and List[Consumer]:
             voltage_output = float(sheet_psu.cell(PSU_VOLTAGE_OUT, column).value)
             jack = str(sheet_psu.cell(PSU_JACK, column).value)
 
-            psu_list.append(Psu(ref_component, supplier, equivalence_code, current_max, voltage_input,
-                                voltage_output, jack))
+            psu_list.append(PsuWidget(ref_component, supplier, equivalence_code, current_max, voltage_input,
+                            voltage_output, jack))
 
     # Loading CONSUMER DATABASE
     consumer_list = []
@@ -97,7 +97,7 @@ def loading_database() -> List[DcdcWidget] and List[Psu] and List[Consumer]:
             voltage_input = float(sheet_consumer.cell(CONSUMER_VOLTAGE_INPUT, column).value)
             current_input = float(sheet_consumer.cell(CONSUMER_CURRENT_INPUT, column).value)
 
-            consumer_list.append(Consumer(name, ref_component, info, equivalence_code, voltage_input, current_input))
+            consumer_list.append(ConsumerWidget(name, ref_component, info, equivalence_code, voltage_input, current_input))
 
     print("Database loaded !")
     return dcdc_list, psu_list, consumer_list

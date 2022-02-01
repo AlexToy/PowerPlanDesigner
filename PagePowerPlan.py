@@ -1,9 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView, QGraphicsRectItem
 from PyQt5 import QtCore
 from DcdcWidget import DcdcWidget
-from Psu import Psu
-from Consumer import Consumer
-from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
 
@@ -37,8 +34,8 @@ class PagePowerPlan(QGraphicsView):
             # Create a copy from a database dcdc
             dcdc = element
             new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
-                            dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
-                            dcdc.voltage_output_max)
+                                  dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
+                                  dcdc.voltage_output_max)
             new_dcdc.voltage_input = dcdc.voltage_input
             new_dcdc.voltage_output = dcdc.voltage_output
             new_dcdc.name = dcdc.name
@@ -47,20 +44,18 @@ class PagePowerPlan(QGraphicsView):
 
         elif element.component == "PSU":
             psu = element
-            new_psu = Psu(psu.ref_component, psu.supplier, psu.equivalence_code, psu.current_max,
-                          psu.voltage_input, psu.voltage_output, psu.jack)
+            new_psu = PsuWidget(psu.ref_component, psu.supplier, psu.equivalence_code, psu.current_max,
+                                psu.voltage_input, psu.voltage_output, psu.jack)
             new_psu.name = psu.name
 
-            # Create the graphical widget of dcdc
-            new_element_widget = PsuWidget(new_psu)
+            new_element_widget = new_psu
 
         elif element.component == "Consumer":
             consumer = element
-            new_consumer = Consumer(consumer.name, consumer.ref_component, consumer.info, consumer.equivalence_code,
-                                    consumer.voltage_input, consumer.current_input)
+            new_consumer = ConsumerWidget(consumer.name, consumer.ref_component, consumer.info,
+                                          consumer.equivalence_code, consumer.voltage_input, consumer.current_input)
 
-            # Create the graphical widget of dcdc
-            new_element_widget = ConsumerWidget(new_consumer)
+            new_element_widget = new_consumer
 
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
@@ -142,9 +137,13 @@ class PagePowerPlan(QGraphicsView):
             # 2 Remove this widget as a child to its parent
             if widget.get_parent() != 0:
                 widget.get_parent().remove_child(widget)
-            # 1 Supprimer les connections
-            # 2 Supprimer de la scene
-            # 3 Supprimer le DCDC
-            # 4 Supprimer le widget
+            # 3 Remove its parent
+            widget.remove_parent()
+            # 4 Remove from the current widget list
+            for element in self.list_element_widget:
+                if element == widget:
+                    self.list_element_widget.remove(element)
+            # 5 Remove the ui of the widget from the scene
+            self.scene.removeItem(widget.proxy_widget)
 
             self.set_delete_element(False)

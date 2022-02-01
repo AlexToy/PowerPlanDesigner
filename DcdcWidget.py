@@ -50,6 +50,7 @@ class DcdcWidget(QWidget):
         self.voltage_out_label = QLabel()
         self.current_out_label = QLabel()
         self.power_out_label = QLabel()
+        self.proxy_widget = GraphicsProxyWidget()
 
         self.parent = 0
         self.children = []
@@ -57,7 +58,7 @@ class DcdcWidget(QWidget):
         self.move_grpbox = False
 
     def ui_init(self):
-        proxy_widget = GraphicsProxyWidget()
+        self.proxy_widget.widget_clicked.connect(self.send_widget)
         grp_box = QGroupBox()
         # Layouts
         v_layout = QVBoxLayout()
@@ -122,10 +123,10 @@ class DcdcWidget(QWidget):
         grp_box.setLayout(v_layout)
         # grp_box.setFixedSize(150, 200)
 
-        proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
-        proxy_widget.setWidget(grp_box)
+        self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
+        self.proxy_widget.setWidget(grp_box)
 
-        return proxy_widget
+        return self.proxy_widget
 
     def add_parent(self, parent):
         if float(self.voltage_input) == float(parent.voltage_output):
@@ -136,8 +137,12 @@ class DcdcWidget(QWidget):
                 parent.voltage_output) + "'s")
 
     def remove_parent(self):
-        print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
+        if self.parent != 0:
+            print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
         self.parent = 0
+
+    def get_parent(self):
+        return self.parent
 
     def add_child(self, child) -> bool:
         # Add a child to the dcdc children list
@@ -207,8 +212,14 @@ class DcdcWidget(QWidget):
         if self.parent != 0:
             self.parent.update_parameters()
 
+    def send_widget(self):
+        self.widget_selected.emit(self)
+
 
 class GraphicsProxyWidget(QGraphicsProxyWidget):
+
+    # Signal
+    widget_clicked = QtCore.pyqtSignal()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -216,7 +227,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
         elif event.button() == Qt.LeftButton:
             self.move_grpbox = False
             # Send to the page power plan the widget
-            self.widget_selected.emit(self)
+            self.widget_clicked.emit()
 
     def mouseMoveEvent(self, event):
         if self.move_grpbox:
