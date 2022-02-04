@@ -124,6 +124,7 @@ class PsuWidget(QWidget):
                     del self.children[index]
                     # Update parameters
                     self.update_parameters()
+                    return
                 else:
                     print("DEBUG : " + self.children[index].name + " not find in the children list !")
         else:
@@ -137,10 +138,10 @@ class PsuWidget(QWidget):
         else:
             print("DEBUG : Any children in the list ! ")
 
-    def add_parent(self, element):
+    def add_parent(self, ):
         print("DEBUG : PsuWidget cannot have parents !")
 
-    def remove_parent(self, element):
+    def remove_parent(self):
         print("DEBUG : PsuWidget cannot have parents !")
 
     def get_parent(self):

@@ -82,10 +82,10 @@ class ConsumerWidget(QWidget):
             print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
         self.parent = 0
 
-    def add_child(self, child) -> bool:
+    def add_child(self) -> bool:
         print("DEBUG : PsuWidget cannot have children !")
 
-    def remove_child(self, remove_child):
+    def remove_child(self):
         print("DEBUG : PsuWidget cannot have children !")
 
     def remove_all_children(self):

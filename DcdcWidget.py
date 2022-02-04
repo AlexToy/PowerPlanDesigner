@@ -161,14 +161,18 @@ class DcdcWidget(QWidget):
 
     def remove_child(self, remove_child):
         if len(self.children) != 0:
+            print("CHILD 1 : " + str(self.children[0]))
+            print("CHILD 2 : " + str(self.children[1]))
             # Find the good child in the children list
             for index in range(len(self.children)):
-                if self.children[index].name == remove_child.name:
+                print(index)
+                if self.children[index] == remove_child:
                     # Remove child to the dcdc children list
                     print("DEBUG : remove " + self.children[index].name + " as child to " + self.name)
                     del self.children[index]
                     # Update parameters
                     self.update_parameters()
+                    return
                 else:
                     print("DEBUG : " + self.children[index].name + " not find in the children list !")
         else:
