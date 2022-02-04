@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget, \
-    QPushButton, QWidget
+    QPushButton, QWidget, QGraphicsLineItem
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5 import QtCore
 
@@ -161,11 +161,8 @@ class DcdcWidget(QWidget):
 
     def remove_child(self, remove_child):
         if len(self.children) != 0:
-            print("CHILD 1 : " + str(self.children[0]))
-            print("CHILD 2 : " + str(self.children[1]))
             # Find the good child in the children list
             for index in range(len(self.children)):
-                print(index)
                 if self.children[index] == remove_child:
                     # Remove child to the dcdc children list
                     print("DEBUG : remove " + self.children[index].name + " as child to " + self.name)
@@ -224,6 +221,13 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
     # Signal
     widget_clicked = QtCore.pyqtSignal()
+    new_widget_position = QtCore.pyqtSignal(float, float)
+
+    def __init__(self, parent=None):
+        super(GraphicsProxyWidget, self).__init__(parent)
+
+        self.updated_cursor_x = 0
+        self.updated_cursor_y = 0
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -243,6 +247,8 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
             updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
             updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
             self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+
+            self.new_widget_position.emit(updated_cursor_x, updated_cursor_y)
 
     def mouseReleaseEvent(self, event):
         pass

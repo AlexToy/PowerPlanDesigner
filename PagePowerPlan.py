@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
+from Arrow import Arrow
 
 
 class PagePowerPlan(QGraphicsView):
@@ -20,6 +21,7 @@ class PagePowerPlan(QGraphicsView):
 
         # Variables
         self.list_element_widget = []
+        self.list_arrows = []
 
         self.widget_parent = 0
         self.widget_child = 0
@@ -100,16 +102,19 @@ class PagePowerPlan(QGraphicsView):
         # It is called by a click on a widget (signal : widget_selected())
         if self.add_child_parent_connection:
             self.index_widget = self.index_widget + 1
+
             # First click : select the parent widget
             if self.index_widget == 1:
                 self.widget_parent = widget
                 print("Parent : " + str(widget))
+
             # Second click : select the child widget
             elif self.index_widget == 2 and widget != self.widget_parent:
                 self.widget_child = widget
                 self.index_widget = 0
                 print("Child : " + str(widget))
 
+                # Parent widget adds the child widget
                 print("Run add child")
                 for element in self.list_element_widget:
                     if element == self.widget_parent:
@@ -121,6 +126,14 @@ class PagePowerPlan(QGraphicsView):
                 parent.add_child(child)
                 child.add_parent(parent)
 
+                # Create and add Arrow on the scene
+                new_arrow = Arrow()
+                self.scene.addItem(new_arrow)
+                self.list_arrows.append(new_arrow)
+                parent.proxy_widget.new_widget_position.connect(new_arrow.update_parent_position)
+                child.proxy_widget.new_widget_position.connect(new_arrow.update_child_position)
+
+                # End off parent widget adds the child widget
                 self.set_add_child_parent_connection(False)
 
             else:
