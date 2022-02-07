@@ -39,6 +39,9 @@ class PsuWidget(QWidget):
         self.power_output_label = QLabel()
         self.proxy_widget = GraphicsProxyWidget()
 
+        self.grpbox_height = 0
+        self.grpbox_width = 0
+
     def ui_init(self):
         grp_box = QGroupBox()
         self.proxy_widget.widget_clicked.connect(self.send_widget)
@@ -96,6 +99,9 @@ class PsuWidget(QWidget):
 
         self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.proxy_widget.setWidget(grp_box)
+
+        self.grpbox_height = grp_box.height()
+        self.grpbox_width = grp_box.width()
 
         return self.proxy_widget
 
@@ -173,6 +179,13 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
     # Signal
     widget_clicked = QtCore.pyqtSignal()
+    new_widget_position = QtCore.pyqtSignal(float, float)
+
+    def __init__(self, parent=None):
+        super(GraphicsProxyWidget, self).__init__(parent)
+
+        self.updated_cursor_x = 0
+        self.updated_cursor_y = 0
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -189,9 +202,12 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
             orig_position = self.scenePos()
 
-            updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-            updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            self.updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+            self.updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+            self.setPos(QPointF(self.updated_cursor_x, self.updated_cursor_y))
+
+            # Send the new position to the arrow
+            self.new_widget_position.emit(self.updated_cursor_x, self.updated_cursor_y)
 
     def mouseReleaseEvent(self, event):
         pass

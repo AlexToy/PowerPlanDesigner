@@ -127,7 +127,9 @@ class PagePowerPlan(QGraphicsView):
                 child.add_parent(parent)
 
                 # Create and add Arrow on the scene
-                new_arrow = Arrow()
+                new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
+                                  parent.grpbox_height, parent.grpbox_width, child.proxy_widget.updated_cursor_x,
+                                  child.proxy_widget.updated_cursor_y, child.grpbox_height)
                 self.scene.addItem(new_arrow)
                 self.list_arrows.append(new_arrow)
                 parent.proxy_widget.new_widget_position.connect(new_arrow.update_parent_position)
