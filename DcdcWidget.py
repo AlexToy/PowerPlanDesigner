@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget, \
-    QPushButton, QWidget, QGraphicsLineItem
+    QWidget
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5 import QtCore
 
@@ -54,6 +54,8 @@ class DcdcWidget(QWidget):
 
         self.parent = 0
         self.children = []
+        # Dict key = child widget & value = arrow
+        self.arrows = {}
 
         self.move_grpbox = False
 

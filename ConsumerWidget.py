@@ -25,6 +25,7 @@ class ConsumerWidget(QWidget):
         self.component = "Consumer"
 
         self.parent = 0
+        self.arrows = {}
 
         # UI parameters
         self.proxy_widget = GraphicsProxyWidget()

@@ -32,6 +32,9 @@ class PsuWidget(QWidget):
         self.power_output = 0
 
         self.children = []
+        self.parent = 0
+        # Dict key = child widget & value = arrow
+        self.arrows = {}
 
         # UI Parameters
         self.voltage_output_label = QLabel()

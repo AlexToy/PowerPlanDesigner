@@ -126,15 +126,23 @@ class PagePowerPlan(QGraphicsView):
                 parent.add_child(child)
                 child.add_parent(parent)
 
+                ### -------- ARROWS --------- ###
                 # Create and add Arrow on the scene
                 new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
                                   parent.proxy_widget.width, parent.proxy_widget.height,
                                   child.proxy_widget.updated_cursor_x, child.proxy_widget.updated_cursor_y,
                                   child.proxy_widget.height)
                 self.scene.addItem(new_arrow)
+                # Add arrows on the arrows list
                 self.list_arrows.append(new_arrow)
+                # Connect the widget and the arrow to update the position
                 parent.proxy_widget.new_widget_position.connect(new_arrow.update_parent_position)
                 child.proxy_widget.new_widget_position.connect(new_arrow.update_child_position)
+                # Add the arrow to his parent
+                # TODO : warning, the dict can not be have two same key
+                parent.arrows.update({child: new_arrow})
+                print(parent.arrows)
+                ### -------- END OF ARROWS --------- ###
 
                 # End off parent widget adds the child widget
                 self.set_add_child_parent_connection(False)
@@ -147,7 +155,23 @@ class PagePowerPlan(QGraphicsView):
                 print("DEBUG : Reset parent & child")
 
         elif self.delete_element:
-            print("Delete element")
+            print("Delete element and arrow")
+
+            ### -------- ARROWS --------- ###
+            # 1 Remove arrow for all children
+            if len(widget.arrows) != 0:
+                for arrow in widget.arrows.values():
+                    self.list_arrows.remove(arrow)
+                    self.scene.removeItem(arrow)
+            # 2 Clear the dictionary
+                widget.arrows.clear()
+            # 3 Ask to the widget parent if it has one to remove the arrow
+            if widget.parent != 0:
+                self.scene.removeItem(widget.parent.arrows.get(widget))
+                del widget.parent.arrows[widget]
+            ### -------- END ARROWS --------- ###
+
+            ### -------- WIDGET --------- ###
             # 1 Remove all children of the widget
             widget.remove_all_children()
             # 2 Remove this widget as a child to its parent
@@ -161,5 +185,6 @@ class PagePowerPlan(QGraphicsView):
                     self.list_element_widget.remove(element)
             # 5 Remove the ui of the widget from the scene
             self.scene.removeItem(widget.proxy_widget)
+            ### -------- END WIDGET --------- ###
 
             self.set_delete_element(False)
