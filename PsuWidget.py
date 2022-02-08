@@ -39,9 +39,6 @@ class PsuWidget(QWidget):
         self.power_output_label = QLabel()
         self.proxy_widget = GraphicsProxyWidget()
 
-        self.grpbox_height = 0
-        self.grpbox_width = 0
-
     def ui_init(self):
         grp_box = QGroupBox()
         self.proxy_widget.widget_clicked.connect(self.send_widget)
@@ -99,9 +96,6 @@ class PsuWidget(QWidget):
 
         self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.proxy_widget.setWidget(grp_box)
-
-        self.grpbox_height = grp_box.height()
-        self.grpbox_width = grp_box.width()
 
         return self.proxy_widget
 
@@ -186,6 +180,8 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
         self.updated_cursor_x = 0
         self.updated_cursor_y = 0
+        self.height = 0
+        self.width = 0
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -211,3 +207,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
     def mouseReleaseEvent(self, event):
         pass
+
+    def resizeEvent(self, event):
+        self.height = event.newSize().height()
+        self.width = event.newSize().width()
