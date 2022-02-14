@@ -3,6 +3,7 @@ from typing import List
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
+from Formula import Formula
 
 
 # DCDC DATABASE
@@ -50,6 +51,7 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
 
     # Loading DCDC DATABASE
     dcdc_list = []
+    dcdc_formula_list = []
     column = 1
     for _ in sheet_dcdc:
         column = column + 1
@@ -63,9 +65,14 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             voltage_output_min = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MIN, column).value)
             voltage_output_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MAX, column).value)
 
+            line = DCDC_VOLTAGE_OUTPUT_MAX + 1
+            while str(sheet_dcdc.cell(line, column).value) != "None":
+                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, column).value)))
+                line = line + 1
+
             print(ref_component)
             dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
-                             voltage_input_max, voltage_output_min, voltage_output_max))
+                             voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
 
     # Loading PSU DATABASE
     psu_list = []

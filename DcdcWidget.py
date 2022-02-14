@@ -15,7 +15,7 @@ class DcdcWidget(QWidget):
 
     def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
                  voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
-                 voltage_output_max: float, parent=None):
+                 voltage_output_max: float, formula_list, parent=None):
         super(DcdcWidget, self).__init__(parent)
 
         #  Fixed parameters
@@ -27,6 +27,7 @@ class DcdcWidget(QWidget):
         self.voltage_input_max = voltage_input_max
         self.voltage_output_min = voltage_output_min
         self.voltage_output_max = voltage_output_max
+        self.formula_list = formula_list
         self.component = "DCDC"
 
         # Dynamic parameters
