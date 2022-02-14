@@ -63,6 +63,9 @@ class DcdcWidget(QWidget):
     def ui_init(self):
         self.proxy_widget.widget_clicked.connect(self.send_widget)
         grp_box = QGroupBox()
+        grp_box.setStyleSheet(
+            "margin: 5px"
+        )
         # Layouts
         v_layout = QVBoxLayout()
         h_layout_1 = QHBoxLayout()
@@ -90,9 +93,13 @@ class DcdcWidget(QWidget):
         # Grid Layout
         # Input
         input_label = QLabel("Input")
+        input_label.setStyleSheet("font: bold")
         self.voltage_in_label.setText(str(self.voltage_input) + " V")
+        self.voltage_in_label.setStyleSheet("color: green")
         self.current_in_label.setText(str(self.current_input) + " mA")
+        self.current_in_label.setStyleSheet("color: red")
         self.power_in_label.setText(str(self.power_input) + " mW")
+        self.power_in_label.setStyleSheet("color: blue")
         grid_layout.addWidget(input_label, 0, 0)
         grid_layout.addWidget(self.voltage_in_label, 1, 0)
         grid_layout.addWidget(self.current_in_label, 2, 0)
@@ -106,9 +113,13 @@ class DcdcWidget(QWidget):
 
         # Output
         output_label = QLabel("Output")
+        output_label.setStyleSheet("font: bold")
         self.voltage_out_label.setText(str(self.voltage_output) + " V")
+        self.voltage_out_label.setStyleSheet("color: green")
         self.current_out_label.setText(str(self.current_output) + " mA")
+        self.current_out_label.setStyleSheet("color: red")
         self.power_out_label.setText(str(self.power_output) + " mW")
+        self.power_out_label.setStyleSheet("color: blue")
         grid_layout.addWidget(output_label, 0, 2)
         grid_layout.addWidget(self.voltage_out_label, 1, 2)
         grid_layout.addWidget(self.current_out_label, 2, 2)
