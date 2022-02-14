@@ -39,7 +39,7 @@ class DcdcWidget(QWidget):
         self.current_output = 0
         self.power_input = 0
         self.power_output = 0
-        self.efficiency = 90
+        self.efficiency = 0
         self.power_dissipation = 0
 
         # UI Parameters
@@ -131,6 +131,21 @@ class DcdcWidget(QWidget):
 
         return self.proxy_widget
 
+    def refresh_efficiency_value(self):
+        for formula in self.formula_list:
+            # Look for the same voltage input & voltage output
+            if formula.voltage_input == float(self.voltage_input) and \
+                    formula.voltage_output == float(self.voltage_output):
+                formula_str = formula.get_formula_efficiency(self.current_output)
+                self.efficiency = eval(formula_str.replace("x", str(self.current_output/1000)))
+                print("DEBUG : New efficiency : " + str(self.efficiency))
+                return
+            # TODO : Look for the closest formula if the voltage input/output are not in the list of formula
+            else:
+                self.efficiency = 85
+                print("DEBUG : New efficiency : " + str(self.efficiency))
+                return
+
     def add_parent(self, parent):
         if float(self.voltage_input) == float(parent.voltage_output):
             self.parent = parent
@@ -195,6 +210,7 @@ class DcdcWidget(QWidget):
         self.current_output = float(self.power_output) / float(self.voltage_output)
 
         # Editing input parameters
+        self.refresh_efficiency_value()
         self.power_input = float(self.power_output) * (float(self.efficiency) / 100)
         self.current_input = float(self.power_input) / float(self.voltage_input)
 
@@ -203,14 +219,17 @@ class DcdcWidget(QWidget):
 
     def update_graphics_parameters(self):
         # Input parameters
-        self.voltage_in_label.setText(str(self.voltage_input) + " V")
-        self.current_in_label.setText(str(self.current_input) + " mA")
-        self.power_in_label.setText(str(self.power_input) + " mW")
+        self.voltage_in_label.setText(self.voltage_input + " V")
+        self.current_in_label.setText(str(round(self.current_input, 2)) + " mA")
+        self.power_in_label.setText(str(round(self.power_input, 2)) + " mW")
+
+        # Efficiency parameters
+        self.efficiency_label.setText(str(round(self.efficiency, 2)) + " %")
 
         # Output parameters
-        self.voltage_out_label.setText(str(self.voltage_output) + " V")
-        self.current_out_label.setText(str(self.current_output) + " mA")
-        self.power_out_label.setText(str(self.power_output) + " mW")
+        self.voltage_out_label.setText(self.voltage_output + " V")
+        self.current_out_label.setText(str(round(self.current_output, 2)) + " mA")
+        self.power_out_label.setText(str(round(self.power_output, 2)) + " mW")
 
         # Update parent parameters
         if self.parent != 0:

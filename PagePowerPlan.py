@@ -37,10 +37,11 @@ class PagePowerPlan(QGraphicsView):
             dcdc = element
             new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
                                   dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
-                                  dcdc.voltage_output_max)
+                                  dcdc.voltage_output_max, dcdc.formula_list)
             new_dcdc.voltage_input = dcdc.voltage_input
             new_dcdc.voltage_output = dcdc.voltage_output
             new_dcdc.name = dcdc.name
+            new_dcdc.refresh_efficiency_value()
 
             new_element_widget = new_dcdc
 
