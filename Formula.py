@@ -6,11 +6,6 @@ class Formula():
         self.split = float(split)
         self.formula_1 = formula_1
         self.formula_2 = formula_2
-        print(self.voltage_input)
-        print(self.voltage_output)
-        print(self.split)
-        print(self.formula_1)
-        print(self.formula_2)
 
     def get_formula_efficiency(self, current_output: float) -> str:
         if current_output <= self.split:

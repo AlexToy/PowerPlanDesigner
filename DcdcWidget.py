@@ -209,10 +209,15 @@ class DcdcWidget(QWidget):
                 self.power_output = float(self.power_output) + float(child.power_input)
         self.current_output = float(self.power_output) / float(self.voltage_output)
 
-        # Editing input parameters
+        # Efficiency parameter
         self.refresh_efficiency_value()
+
+        # Editing input parameters
         self.power_input = float(self.power_output) * (float(self.efficiency) / 100)
         self.current_input = float(self.power_input) / float(self.voltage_input)
+
+        # Power dissipation parameter
+        self.power_dissipation = self.power_output - self.power_input
 
         # Update graphics parameters
         self.update_graphics_parameters()
@@ -220,16 +225,19 @@ class DcdcWidget(QWidget):
     def update_graphics_parameters(self):
         # Input parameters
         self.voltage_in_label.setText(self.voltage_input + " V")
-        self.current_in_label.setText(str(round(self.current_input, 2)) + " mA")
-        self.power_in_label.setText(str(round(self.power_input, 2)) + " mW")
+        self.current_in_label.setText(str(round(self.current_input, 1)) + " mA")
+        self.power_in_label.setText(str(round(self.power_input, 1)) + " mW")
 
-        # Efficiency parameters
-        self.efficiency_label.setText(str(round(self.efficiency, 2)) + " %")
+        # Efficiency parameter
+        self.efficiency_label.setText(str(round(self.efficiency, 1)) + " %")
 
         # Output parameters
         self.voltage_out_label.setText(self.voltage_output + " V")
-        self.current_out_label.setText(str(round(self.current_output, 2)) + " mA")
-        self.power_out_label.setText(str(round(self.power_output, 2)) + " mW")
+        self.current_out_label.setText(str(round(self.current_output, 1)) + " mA")
+        self.power_out_label.setText(str(round(self.power_output, )) + " mW")
+
+        # Power dissipation parameter
+        self.power_dissipation_label.setText(str(round(self.power_dissipation, 1)) + " W")
 
         # Update parent parameters
         if self.parent != 0:
