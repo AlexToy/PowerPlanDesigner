@@ -1,3 +1,27 @@
-QGroupBox#YO {
-    background-color: red;
+QGroupBox#DCDC_GrpBox {
+    background: rgb(221, 235, 247);
+    font-weight: bold;
+    font-size: 13px;
+    padding-top: 25px;
+    border: 10px;
+}
+
+QGroupBox#DCDC_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5 100px;
+    background: rgb(91, 155, 213);
+
+}
+
+QLabel#Voltage {
+    color: green;
+}
+
+QLabel#Current {
+    color: red;
+}
+
+QLabel#Power {
+    color: blue;
 }

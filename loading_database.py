@@ -34,6 +34,7 @@ CONSUMER_VOLTAGE_INPUT = 5
 CONSUMER_CURRENT_INPUT = 6
 
 FILE_DATABASE = "DATA_BASE.xlsx"
+FILE_CONSUMER_DATA_BASE = "Consumer_DATA_BASE.xlsx"
 
 
 def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[ConsumerWidget]:
