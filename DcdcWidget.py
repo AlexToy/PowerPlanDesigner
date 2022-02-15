@@ -63,9 +63,7 @@ class DcdcWidget(QWidget):
     def ui_init(self):
         self.proxy_widget.widget_clicked.connect(self.send_widget)
         grp_box = QGroupBox()
-        grp_box.setStyleSheet(
-            "margin: 5px"
-        )
+        grp_box.setObjectName("YO")
         # Layouts
         v_layout = QVBoxLayout()
         h_layout_1 = QHBoxLayout()
