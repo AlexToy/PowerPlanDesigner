@@ -2,13 +2,11 @@ from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLabel, QGraphicsProxyWidget
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5 import QtCore
 
-
 INITIAL_POS_X = 50
 INITIAL_POS_Y = 50
 
 
 class ConsumerWidget(QWidget):
-
     # Signal
     widget_selected = QtCore.pyqtSignal(object)
 
@@ -27,6 +25,7 @@ class ConsumerWidget(QWidget):
         self.component = "Consumer"
 
         self.parent = 0
+        self.arrows = {}
 
         # UI parameters
         self.proxy_widget = GraphicsProxyWidget()
@@ -82,10 +81,10 @@ class ConsumerWidget(QWidget):
             print("DEBUG : remove " + self.parent.name + "as parent to " + self.name)
         self.parent = 0
 
-    def add_child(self, child) -> bool:
+    def add_child(self) -> bool:
         print("DEBUG : PsuWidget cannot have children !")
 
-    def remove_child(self, remove_child):
+    def remove_child(self):
         print("DEBUG : PsuWidget cannot have children !")
 
     def remove_all_children(self):
@@ -96,9 +95,17 @@ class ConsumerWidget(QWidget):
 
 
 class GraphicsProxyWidget(QGraphicsProxyWidget):
-
     # Signal
     widget_clicked = QtCore.pyqtSignal()
+    new_widget_position = QtCore.pyqtSignal(float, float)
+
+    def __init__(self, parent=None):
+        super(GraphicsProxyWidget, self).__init__(parent)
+
+        self.updated_cursor_x = 0
+        self.updated_cursor_y = 0
+        self.height = 0
+        self.width = 0
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -115,9 +122,16 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
 
             orig_position = self.scenePos()
 
-            updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-            updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-            self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+            self.updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+            self.updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+            self.setPos(QPointF(self.updated_cursor_x, self.updated_cursor_y))
+
+            # Send the new position to the arrow
+            self.new_widget_position.emit(self.updated_cursor_x, self.updated_cursor_y)
 
     def mouseReleaseEvent(self, event):
         pass
+
+    def resizeEvent(self, event):
+        self.height = event.newSize().height()
+        self.width = event.newSize().width()
