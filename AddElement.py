@@ -41,7 +41,7 @@ class AddElement(QTabWidget):
             self.tab_psu_layout.addWidget(self.select_psu_widget)
         self.tab_psu.setLayout(self.tab_psu_layout)
 
-        # LDO
+        # CONSUMER
         self.tab_consumer = QScrollArea()
         self.tab_consumer_layout = QVBoxLayout()
         for consumer in self.list_consumer_database:
