@@ -39,6 +39,7 @@ class ConsumerWidget(QWidget):
 
     def ui_init(self):
         grp_box = QGroupBox()
+        grp_box.setObjectName("CONSUMER_GrpBox")
         self.proxy_widget.widget_clicked.connect(self.send_widget)
 
         # creation of widget & layout
@@ -48,9 +49,13 @@ class ConsumerWidget(QWidget):
         equivalence_code_label = QLabel(self.equivalence_code)
         line_label = QLabel("------------")
         input_label = QLabel("Input")
+        input_label.setStyleSheet("font: bold")
         voltage_input_label = QLabel(str(self.voltage_input) + " V")
+        voltage_input_label.setObjectName("Voltage")
         current_input_label = QLabel(str(self.current_input) + " mA")
+        current_input_label.setObjectName("Current")
         power_input_label = QLabel(str(self.power_input) + " mW")
+        power_input_label.setObjectName("Power")
 
         # Layout
         layout.addWidget(ref_component_label, 0, 0)
