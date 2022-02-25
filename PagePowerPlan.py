@@ -55,8 +55,10 @@ class PagePowerPlan(QGraphicsView):
 
         elif element.component == "Consumer":
             consumer = element
-            new_consumer = ConsumerWidget(consumer.name, consumer.ref_component, consumer.info,
-                                          consumer.equivalence_code, consumer.voltage_input, consumer.current_input)
+            new_consumer = ConsumerWidget(consumer.name, consumer.type, consumer.supplier, consumer.ref_component,
+                                          consumer.equivalence_code, consumer.info, consumer.voltage_input,
+                                          consumer.current_theoretical, consumer.current_min_measure,
+                                          consumer.current_max_measure, consumer.current_peak)
 
             new_element_widget = new_consumer
 

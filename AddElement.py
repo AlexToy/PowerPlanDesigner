@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, \
-    QLabel, QVBoxLayout
+    QLabel, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5 import QtCore
 from PyQt5.QtCore import QLocale
@@ -7,6 +7,7 @@ from loading_database import loading_database
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
+from AddComponentConsumer import AddComponentConsumer
 
 
 class AddElement(QTabWidget):
@@ -25,30 +26,30 @@ class AddElement(QTabWidget):
         # 2 Graphical widget
         # DC/DC
         self.tab_dcdc = QScrollArea()
+        self.widget_dcdc = QWidget()
         self.tab_dcdc_layout = QVBoxLayout()
         for dcdc in self.list_dcdc_database:
             self.select_dcdc_widget = SelectDcdcWidget(dcdc)
             self.select_dcdc_widget.clicked_add_dcdc.connect(self.send_element_selected)
             self.tab_dcdc_layout.addWidget(self.select_dcdc_widget)
-        self.tab_dcdc.setLayout(self.tab_dcdc_layout)
+        self.widget_dcdc.setLayout(self.tab_dcdc_layout)
+        self.tab_dcdc.setWidget(self.widget_dcdc)
 
         # PSU
         self.tab_psu = QScrollArea()
+        self.widget_psu = QWidget()
         self.tab_psu_layout = QVBoxLayout()
         for psu in self.list_psu_database:
             self.select_psu_widget = SelectPsuWidget(psu)
             self.select_psu_widget.clicked_add_psu.connect(self.send_element_selected)
             self.tab_psu_layout.addWidget(self.select_psu_widget)
-        self.tab_psu.setLayout(self.tab_psu_layout)
+        self.widget_psu.setLayout(self.tab_psu_layout)
+        self.tab_psu.setWidget(self.widget_psu)
 
         # CONSUMER
-        self.tab_consumer = QScrollArea()
-        self.tab_consumer_layout = QVBoxLayout()
-        for consumer in self.list_consumer_database:
-            self.select_consumer_widget = SelectConsumerWidget(consumer)
-            self.select_consumer_widget.clicked_add_consumer.connect(self.send_element_selected)
-            self.tab_consumer_layout.addWidget(self.select_consumer_widget)
-        self.tab_consumer.setLayout(self.tab_consumer_layout)
+
+        self.tab_consumer = AddComponentConsumer(self.list_consumer_database)
+        self.tab_consumer.add_consumer.connect(self.send_element_selected)
 
         # TODO : SWITCH
         self.tab_switch = QScrollArea()
@@ -62,7 +63,6 @@ class AddElement(QTabWidget):
         self.addTab(self.tab_consumer, "CONSUMER")
 
         self.setWindowTitle("Add new element")
-        self.setFixedSize(600, 600)
 
     def send_element_selected(self, element):
         self.dcdc_selected.emit(element)
@@ -203,6 +203,8 @@ class SelectConsumerWidget(QGroupBox):
         self.line_1 = QLabel(self.consumer.ref_component)
         self.line_2 = QLabel(self.consumer.info)
         self.line_3 = QLabel(self.consumer.equivalence_code)
+        self.line_4 = QLabel(self.consumer.equivalence_code)
+        self.line_5 = QLabel(self.consumer.equivalence_code)
         self.add_consumer_button = QPushButton("Add")
 
         # Layout

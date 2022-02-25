@@ -10,16 +10,18 @@ class ConsumerWidget(QWidget):
     # Signal
     widget_selected = QtCore.pyqtSignal(object)
 
-    def __init__(self, name, ref_component_1, ref_component_2, equivalence_code, info, voltage_input,
+    def __init__(self, name, type, supplier, ref_component, equivalence_code, info, voltage_input,
                  current_theoretical, current_min_measure, current_max_measure, current_peak, parent=None):
         super(ConsumerWidget, self).__init__(parent)
 
         #  Fixed parameters
         self.name = name
-        self.ref_component_1 = ref_component_1
-        self.ref_component_2 = ref_component_2
-        self.info = info
+        self.type = type
+        self.supplier = supplier
+        self.ref_component = ref_component
         self.equivalence_code = equivalence_code
+        self.info = info
+        self.current_theoretical = current_theoretical
         self.current_min_measure = current_min_measure
         self.current_max_measure = current_max_measure
         self.current_peak = current_peak
