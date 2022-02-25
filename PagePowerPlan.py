@@ -126,7 +126,7 @@ class PagePowerPlan(QGraphicsView):
                         child = element
                 # If this connection doesn't already exist, add parent and child
                 # TODO : Create the if, not functional for the moment
-                if parent.add_child(child):
+                if parent.add_child(child) and child.add_parent(parent):
                     ### -------- ARROWS --------- ###
                     # Create and add Arrow on the scene
                     new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
