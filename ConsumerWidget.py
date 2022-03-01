@@ -81,9 +81,11 @@ class ConsumerWidget(QWidget):
         if float(self.voltage_input) == float(parent.voltage_output):
             self.parent = parent
             print("DEBUG : add " + parent.name + "as parent to " + self.name)
+            return True
         else:
             print("DEBUG : " + str(self.voltage_input) + "'s output voltage is different from " + str(
                 parent.voltage_output) + "'s")
+            return False
 
     def get_parent(self):
         return self.parent
@@ -94,13 +96,16 @@ class ConsumerWidget(QWidget):
         self.parent = 0
 
     def add_child(self) -> bool:
-        print("DEBUG : PsuWidget cannot have children !")
+        print("DEBUG : ConsumerWidget cannot have children !")
 
     def remove_child(self):
-        print("DEBUG : PsuWidget cannot have children !")
+        print("DEBUG : ConsumerWidget cannot have children !")
 
     def remove_all_children(self):
-        print("DEBUG : PsuWidget cannot have children !")
+        print("DEBUG : ConsumerWidget cannot have children !")
+
+    def get_children(self):
+        return 0
 
     def send_widget(self):
         self.widget_selected.emit(self)

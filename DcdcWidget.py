@@ -212,6 +212,12 @@ class DcdcWidget(QWidget):
         else:
             print("DEBUG : Any children in the list ! ")
 
+    def get_children(self):
+        if len(self.children) != 0:
+            return self.children
+        else:
+            return 0
+
     def update_parameters(self):
         # Editing output parameters
         self.power_output = 0

@@ -173,18 +173,22 @@ class PagePowerPlan(QGraphicsView):
             ### -------- END ARROWS --------- ###
 
             ### -------- WIDGET --------- ###
-            # 1 Remove all children of the widget
+            # 1 Remove this widget as a parent to its children
+            if widget.get_children() != 0:
+                for child in widget.get_children():
+                    child.remove_parent()
+            # 2 Remove all children of the widget
             widget.remove_all_children()
-            # 2 Remove this widget as a child to its parent
+            # 3 Remove this widget as a child to its parent
             if widget.get_parent() != 0:
                 widget.get_parent().remove_child(widget)
-            # 3 Remove its parent
+            # 4 Remove its parent
             widget.remove_parent()
-            # 4 Remove from the current widget list
+            # 5 Remove from the current widget list
             for element in self.list_element_widget:
                 if element == widget:
                     self.list_element_widget.remove(element)
-            # 5 Remove the ui of the widget from the scene
+            # 6 Remove the ui of the widget from the scene
             self.scene.removeItem(widget.proxy_widget)
             ### -------- END WIDGET --------- ###
 
