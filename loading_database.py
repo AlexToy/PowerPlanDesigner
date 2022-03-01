@@ -9,12 +9,13 @@ from Formula import Formula
 DCDC_REF_COMPONENT = 1
 DCDC_SUPPLIER = 2
 DCDC_CURRENT_MAX = 3
-DCDC_EQUIVALENCE_CODE = 4
-DCDC_VOLTAGE_INPUT_MIN = 5
-DCDC_VOLTAGE_INPUT_MAX = 6
-DCDC_VOLTAGE_OUTPUT_MIN = 7
-DCDC_VOLTAGE_OUTPUT_MAX = 8
-EFFICIENCY = 9
+DCDC_MODE = 4
+DCDC_EQUIVALENCE_CODE = 5
+DCDC_VOLTAGE_INPUT_MIN = 6
+DCDC_VOLTAGE_INPUT_MAX = 7
+DCDC_VOLTAGE_OUTPUT_MIN = 8
+DCDC_VOLTAGE_OUTPUT_MAX = 9
+DCDC_EFFICIENCY = 10
 
 # PSU DATABASE
 PSU_REF_COMPONENT = 1
@@ -61,16 +62,16 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             ref_component = str(sheet_dcdc.cell(line, DCDC_REF_COMPONENT).value)
             supplier = str(sheet_dcdc.cell(line, DCDC_SUPPLIER).value)
             current_max = float(sheet_dcdc.cell(line, DCDC_CURRENT_MAX).value)
+            mode = str(sheet_dcdc.cell(line, DCDC_MODE).value)
             equivalence_code = str(sheet_dcdc.cell(line, DCDC_EQUIVALENCE_CODE).value)
             voltage_input_min = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_INPUT_MIN).value)
             voltage_input_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_INPUT_MAX).value)
             voltage_output_min = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MIN).value)
             voltage_output_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MAX).value)
-            print(str(sheet_dcdc.cell(line, EFFICIENCY).value))
-            if str(sheet_dcdc.cell(line, EFFICIENCY).value) != "None":
-                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, EFFICIENCY).value)))
+            if str(sheet_dcdc.cell(line, DCDC_EFFICIENCY).value) != "None":
+                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, DCDC_EFFICIENCY).value)))
 
-            dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
+            dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, mode, equivalence_code, voltage_input_min,
                                         voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
 
     # Loading PSU DATABASE

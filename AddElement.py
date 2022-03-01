@@ -80,6 +80,7 @@ class SelectDcdcWidget(QGroupBox):
 
         # creation of widget & layout
         self.layout = QHBoxLayout()
+        self.layout_1 = QVBoxLayout()
         self.layout_2 = QGridLayout()
         self.add_dcdc_button = QPushButton("Add")
         self.name_label = QLabel("Name : ")
@@ -88,7 +89,12 @@ class SelectDcdcWidget(QGroupBox):
         self.v_in = QLineEdit()
         self.v_out_label = QLabel("Vout : ")
         self.v_out = QLineEdit()
-        self.text = QLabel("Info DCDC")
+        self.current_label = QLabel(str(self.dcdc_copy.current_max) + " A")
+        self.mode_label = QLabel(self.dcdc_copy.mode)
+        self.voltage_input_label = QLabel("Vin : " + str(self.dcdc_copy.voltage_input_min) + " V - " +
+                                          str(self.dcdc_copy.voltage_input_max) + " V")
+        self.voltage_output_label = QLabel("Vout : " + str(self.dcdc_copy.voltage_output_min) + " V - " +
+                                          str(self.dcdc_copy.voltage_output_max) + " V")
         self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
@@ -99,7 +105,13 @@ class SelectDcdcWidget(QGroupBox):
         self.layout_2.addWidget(self.v_out_label, 2, 0)
         self.layout_2.addWidget(self.v_out, 2, 1)
         self.layout_2.addWidget(self.add_dcdc_button, 3, 0, 1, 2)
-        self.layout.addWidget(self.text)
+
+        self.layout_1.addWidget(self.current_label)
+        self.layout_1.addWidget(self.mode_label)
+        self.layout_1.addWidget(self.voltage_input_label)
+        self.layout_1.addWidget(self.voltage_output_label)
+
+        self.layout.addLayout(self.layout_1)
         self.layout.addLayout(self.layout_2)
 
         # Widget settings
@@ -186,37 +198,3 @@ class SelectPsuWidget(QGroupBox):
             self.name.setText("")
         else:
             print("DEBUG : The name is empty !")
-
-
-class SelectConsumerWidget(QGroupBox):
-    # Signal
-    clicked_add_consumer = QtCore.pyqtSignal(object)
-
-    def __init__(self, consumer: ConsumerWidget, parent=None):
-        super(SelectConsumerWidget, self).__init__(parent)
-
-        # Get consumer from database
-        self.consumer = consumer
-
-        # creation of widget & layout
-        self.layout = QGridLayout()
-        self.line_1 = QLabel(self.consumer.ref_component)
-        self.line_2 = QLabel(self.consumer.info)
-        self.line_3 = QLabel(self.consumer.equivalence_code)
-        self.line_4 = QLabel(self.consumer.equivalence_code)
-        self.line_5 = QLabel(self.consumer.equivalence_code)
-        self.add_consumer_button = QPushButton("Add")
-
-        # Layout
-        self.layout.addWidget(self.line_1, 0, 0)
-        self.layout.addWidget(self.line_2, 1, 0)
-        self.layout.addWidget(self.line_3, 2, 0)
-        self.layout.addWidget(self.add_consumer_button, 0, 1)
-
-        # Widget settings
-        self.add_consumer_button.clicked.connect(self.clicked_button_function)
-        self.setTitle(self.consumer.name)
-        self.setLayout(self.layout)
-
-    def clicked_button_function(self):
-        self.clicked_add_consumer.emit(self.consumer)

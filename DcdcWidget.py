@@ -13,7 +13,7 @@ class DcdcWidget(QWidget):
     # Signal
     widget_selected = QtCore.pyqtSignal(object)
 
-    def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
+    def __init__(self, ref_component: str, supplier: str, current_max: float, mode: str, equivalence_code: str,
                  voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
                  voltage_output_max: float, formula_list, parent=None):
         super(DcdcWidget, self).__init__(parent)
@@ -22,6 +22,7 @@ class DcdcWidget(QWidget):
         self.ref_component = ref_component
         self.supplier = supplier
         self.current_max = current_max
+        self.mode = mode
         self.equivalence_code = equivalence_code
         self.voltage_input_min = voltage_input_min
         self.voltage_input_max = voltage_input_max
