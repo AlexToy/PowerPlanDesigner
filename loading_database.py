@@ -14,6 +14,7 @@ DCDC_VOLTAGE_INPUT_MIN = 5
 DCDC_VOLTAGE_INPUT_MAX = 6
 DCDC_VOLTAGE_OUTPUT_MIN = 7
 DCDC_VOLTAGE_OUTPUT_MAX = 8
+EFFICIENCY = 9
 
 # PSU DATABASE
 PSU_REF_COMPONENT = 1
@@ -53,41 +54,38 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
     # Loading DCDC DATABASE
     dcdc_list = []
     dcdc_formula_list = []
-    column = 1
+    line = 1
     for _ in sheet_dcdc:
-        column = column + 1
-        if str(sheet_dcdc.cell(1, column).value) != "None":
-            ref_component = str(sheet_dcdc.cell(DCDC_REF_COMPONENT, column).value)
-            supplier = str(sheet_dcdc.cell(DCDC_SUPPLIER, column).value)
-            current_max = float(sheet_dcdc.cell(DCDC_CURRENT_MAX, column).value)
-            equivalence_code = str(sheet_dcdc.cell(DCDC_EQUIVALENCE_CODE, column).value)
-            voltage_input_min = float(sheet_dcdc.cell(DCDC_VOLTAGE_INPUT_MIN, column).value)
-            voltage_input_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_INPUT_MAX, column).value)
-            voltage_output_min = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MIN, column).value)
-            voltage_output_max = float(sheet_dcdc.cell(DCDC_VOLTAGE_OUTPUT_MAX, column).value)
+        line = line + 1
+        if str(sheet_dcdc.cell(line, 1).value) != "None":
+            ref_component = str(sheet_dcdc.cell(line, DCDC_REF_COMPONENT).value)
+            supplier = str(sheet_dcdc.cell(line, DCDC_SUPPLIER).value)
+            current_max = float(sheet_dcdc.cell(line, DCDC_CURRENT_MAX).value)
+            equivalence_code = str(sheet_dcdc.cell(line, DCDC_EQUIVALENCE_CODE).value)
+            voltage_input_min = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_INPUT_MIN).value)
+            voltage_input_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_INPUT_MAX).value)
+            voltage_output_min = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MIN).value)
+            voltage_output_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MAX).value)
+            print(str(sheet_dcdc.cell(line, EFFICIENCY).value))
+            if str(sheet_dcdc.cell(line, EFFICIENCY).value) != "None":
+                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, EFFICIENCY).value)))
 
-            line = DCDC_VOLTAGE_OUTPUT_MAX + 1
-            while str(sheet_dcdc.cell(line, column).value) != "None":
-                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, column).value)))
-                line = line + 1
-
-            print(ref_component)
             dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
                                         voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
 
     # Loading PSU DATABASE
     psu_list = []
-    column = 1
+    line = 1
     for _ in sheet_psu:
-        column = column + 1
-        if str(sheet_psu.cell(1, column).value) != "None":
-            ref_component = str(sheet_psu.cell(PSU_REF_COMPONENT, column).value)
-            supplier = str(sheet_psu.cell(PSU_SUPPLIER, column).value)
-            equivalence_code = str(sheet_psu.cell(PSU_EQUIVALENCE_CODE, column).value)
-            current_max = float(sheet_psu.cell(PSU_CURRENT_MAX, column).value)
-            voltage_input = float(sheet_psu.cell(PSU_VOLTAGE_IN, column).value)
-            voltage_output = float(sheet_psu.cell(PSU_VOLTAGE_OUT, column).value)
-            jack = str(sheet_psu.cell(PSU_JACK, column).value)
+        line = line + 1
+        if str(sheet_psu.cell(line, 1).value) != "None":
+            ref_component = str(sheet_psu.cell(line, PSU_REF_COMPONENT).value)
+            supplier = str(sheet_psu.cell(line, PSU_SUPPLIER).value)
+            equivalence_code = str(sheet_psu.cell(line, PSU_EQUIVALENCE_CODE).value)
+            current_max = float(sheet_psu.cell(line, PSU_CURRENT_MAX).value)
+            voltage_input = float(sheet_psu.cell(line, PSU_VOLTAGE_IN).value)
+            voltage_output = float(sheet_psu.cell(line, PSU_VOLTAGE_OUT).value)
+            jack = str(sheet_psu.cell(line, PSU_JACK).value)
 
             psu_list.append(PsuWidget(ref_component, supplier, equivalence_code, current_max, voltage_input,
                                       voltage_output, jack))

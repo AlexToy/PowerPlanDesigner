@@ -104,7 +104,7 @@ class DcdcWidget(QWidget):
         grid_layout.addWidget(self.power_in_label, 3, 0)
 
         # DC/DC Consumption
-        self.power_dissipation_label.setText("- " + str(self.power_dissipation) + " W")
+        self.power_dissipation_label.setText("- " + str(self.power_dissipation) + " mW")
         self.efficiency_label.setText("- %")
         grid_layout.addWidget(self.power_dissipation_label, 2, 1)
         grid_layout.addWidget(self.efficiency_label, 3, 1)
