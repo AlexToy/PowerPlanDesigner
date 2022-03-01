@@ -11,7 +11,21 @@ QGroupBox#DCDC_GrpBox:title {
     subcontrol-position: top center;
     padding: 5 100px;
     background: rgb(91, 155, 213);
+}
 
+QGroupBox#CONSUMER_GrpBox {
+    background: rgb(250, 233, 207);
+    font-weight: bold;
+    font-size: 13px;
+    padding-top: 25px;
+    border: 10px;
+}
+
+QGroupBox#CONSUMER_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5 100px;
+    background: rgb(220, 145, 27);
 }
 
 QLabel#Voltage {

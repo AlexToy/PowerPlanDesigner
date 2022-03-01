@@ -5,7 +5,6 @@ from PsuWidget import PsuWidget
 from ConsumerWidget import ConsumerWidget
 from Formula import Formula
 
-
 # DCDC DATABASE
 DCDC_REF_COMPONENT = 1
 DCDC_SUPPLIER = 2
@@ -26,27 +25,28 @@ PSU_VOLTAGE_OUT = 6
 PSU_JACK = 7
 
 # CONSUMER DATABASE
-CONSUMER_NAME = 1
-CONSUMER_REF_COMPONENT = 2
-CONSUMER_INFO = 3
+CONSUMER_TYPE = 1
+CONSUMER_SUPPLIER = 2
+CONSUMER_REF_COMPONENT = 3
 CONSUMER_EQUIVALENCE_CODE = 4
-CONSUMER_VOLTAGE_INPUT = 5
-CONSUMER_CURRENT_INPUT = 6
+CONSUMER_INFO = 5
+CONSUMER_VOLTAGE_INPUT = 6
+CONSUMER_CURRENT_THEORETICAL = 7
+CONSUMER_CURRENT_MIN_MEASURE = 8
+CONSUMER_CURRENT_MAX_MEASURE = 9
+CONSUMER_CURRENT_PEAK_MEASURE = 10
 
 FILE_DATABASE = "DATA_BASE.xlsx"
 FILE_CONSUMER_DATA_BASE = "Consumer_DATA_BASE.xlsx"
 
 
 def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[ConsumerWidget]:
-
-    input_file = openpyxl.load_workbook(FILE_DATABASE, read_only=True)
-    for sheet in input_file:
+    input_file_database = openpyxl.load_workbook(FILE_DATABASE, read_only=True)
+    for sheet in input_file_database:
         if sheet.title == "DCDC":
             sheet_dcdc = sheet
         elif sheet.title == "PSU":
             sheet_psu = sheet
-        elif sheet.title == "CONSUMER":
-            sheet_consumer = sheet
 
     print("Loading database ...")
 
@@ -73,7 +73,7 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
 
             print(ref_component)
             dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
-                             voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
+                                        voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
 
     # Loading PSU DATABASE
     psu_list = []
@@ -90,22 +90,33 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             jack = str(sheet_psu.cell(PSU_JACK, column).value)
 
             psu_list.append(PsuWidget(ref_component, supplier, equivalence_code, current_max, voltage_input,
-                            voltage_output, jack))
+                                      voltage_output, jack))
 
     # Loading CONSUMER DATABASE
+    input_file_consumer_database = openpyxl.load_workbook(FILE_CONSUMER_DATA_BASE, read_only=True)
     consumer_list = []
-    column = 1
-    for _ in sheet_consumer:
-        column = column + 1
-        if str(sheet_consumer.cell(1, column).value) != "None":
-            name = str(sheet_consumer.cell(CONSUMER_NAME, column).value)
-            ref_component = str(sheet_consumer.cell(CONSUMER_REF_COMPONENT, column).value)
-            info = str(sheet_consumer.cell(CONSUMER_INFO, column).value)
-            equivalence_code = str(sheet_consumer.cell(CONSUMER_EQUIVALENCE_CODE, column).value)
-            voltage_input = float(sheet_consumer.cell(CONSUMER_VOLTAGE_INPUT, column).value)
-            current_input = float(sheet_consumer.cell(CONSUMER_CURRENT_INPUT, column).value)
+    line = 1
+    for sheet_consumer in input_file_consumer_database:
+        print("sheet : " + str(sheet_consumer.title))
+        line = 1
+        for _ in sheet_consumer:
+            line = line + 1
+            print("     line : " + str(line))
+            if str(sheet_consumer.cell(line, 1).value) != "None":
+                type = str(sheet_consumer.cell(line, CONSUMER_TYPE).value)
+                supplier = str(sheet_consumer.cell(line, CONSUMER_SUPPLIER).value)
+                ref_component = str(sheet_consumer.cell(line, CONSUMER_REF_COMPONENT).value)
+                equivalence_code = str(sheet_consumer.cell(line, CONSUMER_EQUIVALENCE_CODE).value)
+                info = str(sheet_consumer.cell(line, CONSUMER_INFO).value)
+                voltage_input = float(sheet_consumer.cell(line, CONSUMER_VOLTAGE_INPUT).value)
+                current_theoretical = float(sheet_consumer.cell(line, CONSUMER_CURRENT_THEORETICAL).value)
+                current_min_measure = str(sheet_consumer.cell(line, CONSUMER_CURRENT_MIN_MEASURE).value)
+                current_max_measure = str(sheet_consumer.cell(line, CONSUMER_CURRENT_MAX_MEASURE).value)
+                current_peak_measure = str(sheet_consumer.cell(line, CONSUMER_CURRENT_PEAK_MEASURE).value)
 
-            consumer_list.append(ConsumerWidget(name, ref_component, info, equivalence_code, voltage_input, current_input))
+                consumer_list.append(ConsumerWidget(str(sheet_consumer.title), type, supplier, ref_component,
+                                                    equivalence_code, info, voltage_input, current_theoretical,
+                                                    current_min_measure, current_max_measure, current_peak_measure))
 
     print("Database loaded !")
     return dcdc_list, psu_list, consumer_list

@@ -55,8 +55,10 @@ class PagePowerPlan(QGraphicsView):
 
         elif element.component == "Consumer":
             consumer = element
-            new_consumer = ConsumerWidget(consumer.name, consumer.ref_component, consumer.info,
-                                          consumer.equivalence_code, consumer.voltage_input, consumer.current_input)
+            new_consumer = ConsumerWidget(consumer.name, consumer.type, consumer.supplier, consumer.ref_component,
+                                          consumer.equivalence_code, consumer.info, consumer.voltage_input,
+                                          consumer.current_theoretical, consumer.current_min_measure,
+                                          consumer.current_max_measure, consumer.current_peak)
 
             new_element_widget = new_consumer
 
@@ -124,26 +126,24 @@ class PagePowerPlan(QGraphicsView):
                         child = element
                 # If this connection doesn't already exist, add parent and child
                 # TODO : Create the if, not functional for the moment
-                parent.add_child(child)
-                child.add_parent(parent)
-
-                ### -------- ARROWS --------- ###
-                # Create and add Arrow on the scene
-                new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
-                                  parent.proxy_widget.width, parent.proxy_widget.height,
-                                  child.proxy_widget.updated_cursor_x, child.proxy_widget.updated_cursor_y,
-                                  child.proxy_widget.height)
-                self.scene.addItem(new_arrow)
-                # Add arrows on the arrows list
-                self.list_arrows.append(new_arrow)
-                # Connect the widget and the arrow to update the position
-                parent.proxy_widget.new_widget_position.connect(new_arrow.update_parent_position)
-                child.proxy_widget.new_widget_position.connect(new_arrow.update_child_position)
-                # Add the arrow to his parent
-                # TODO : warning, the dict can not be have two same key
-                parent.arrows.update({child: new_arrow})
-                print(parent.arrows)
-                ### -------- END OF ARROWS --------- ###
+                if parent.add_child(child) and child.add_parent(parent):
+                    ### -------- ARROWS --------- ###
+                    # Create and add Arrow on the scene
+                    new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
+                                      parent.proxy_widget.width, parent.proxy_widget.height,
+                                      child.proxy_widget.updated_cursor_x, child.proxy_widget.updated_cursor_y,
+                                      child.proxy_widget.height)
+                    self.scene.addItem(new_arrow)
+                    # Add arrows on the arrows list
+                    self.list_arrows.append(new_arrow)
+                    # Connect the widget and the arrow to update the position
+                    parent.proxy_widget.new_widget_position.connect(new_arrow.update_parent_position)
+                    child.proxy_widget.new_widget_position.connect(new_arrow.update_child_position)
+                    # Add the arrow to his parent
+                    # TODO : warning, the dict can not be have two same key
+                    parent.arrows.update({child: new_arrow})
+                    print(parent.arrows)
+                    ### -------- END OF ARROWS --------- ###
 
                 # End off parent widget adds the child widget
                 self.set_add_child_parent_connection(False)
@@ -164,7 +164,7 @@ class PagePowerPlan(QGraphicsView):
                 for arrow in widget.arrows.values():
                     self.list_arrows.remove(arrow)
                     self.scene.removeItem(arrow)
-            # 2 Clear the dictionary
+                # 2 Clear the dictionary
                 widget.arrows.clear()
             # 3 Ask to the widget parent if it has one to remove the arrow
             if widget.parent != 0:
@@ -173,18 +173,22 @@ class PagePowerPlan(QGraphicsView):
             ### -------- END ARROWS --------- ###
 
             ### -------- WIDGET --------- ###
-            # 1 Remove all children of the widget
+            # 1 Remove this widget as a parent to its children
+            if widget.get_children() != 0:
+                for child in widget.get_children():
+                    child.remove_parent()
+            # 2 Remove all children of the widget
             widget.remove_all_children()
-            # 2 Remove this widget as a child to its parent
+            # 3 Remove this widget as a child to its parent
             if widget.get_parent() != 0:
                 widget.get_parent().remove_child(widget)
-            # 3 Remove its parent
+            # 4 Remove its parent
             widget.remove_parent()
-            # 4 Remove from the current widget list
+            # 5 Remove from the current widget list
             for element in self.list_element_widget:
                 if element == widget:
                     self.list_element_widget.remove(element)
-            # 5 Remove the ui of the widget from the scene
+            # 6 Remove the ui of the widget from the scene
             self.scene.removeItem(widget.proxy_widget)
             ### -------- END WIDGET --------- ###
 

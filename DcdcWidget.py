@@ -159,9 +159,11 @@ class DcdcWidget(QWidget):
         if float(self.voltage_input) == float(parent.voltage_output):
             self.parent = parent
             print("DEBUG : add " + parent.name + "as parent to " + self.name)
+            return True
         else:
             print("DEBUG : " + str(self.voltage_input) + "'s output voltage is different from " + str(
                 parent.voltage_output) + "'s")
+            return False
 
     def remove_parent(self):
         if self.parent != 0:
@@ -209,6 +211,12 @@ class DcdcWidget(QWidget):
             print("DEBUG : All children removed !")
         else:
             print("DEBUG : Any children in the list ! ")
+
+    def get_children(self):
+        if len(self.children) != 0:
+            return self.children
+        else:
+            return 0
 
     def update_parameters(self):
         # Editing output parameters
