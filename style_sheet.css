@@ -13,6 +13,21 @@ QGroupBox#DCDC_GrpBox:title {
     background: rgb(91, 155, 213);
 }
 
+QGroupBox#LDO_GrpBox {
+    background: rgb(237, 243, 214);
+    font-weight: bold;
+    font-size: 13px;
+    padding-top: 25px;
+    border: 10px;
+}
+
+QGroupBox#LDO_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5 100px;
+    background: rgb(162, 192, 55);
+}
+
 QGroupBox#CONSUMER_GrpBox {
     background: rgb(250, 233, 207);
     font-weight: bold;

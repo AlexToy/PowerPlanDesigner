@@ -6,6 +6,7 @@ from PyQt5.QtCore import QLocale
 from loading_database import loading_database
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
+from LdoWidget import LdoWidget
 from ConsumerWidget import ConsumerWidget
 from AddComponentConsumer import AddComponentConsumer
 
@@ -21,7 +22,7 @@ class AddElement(QTabWidget):
         super(AddElement, self).__init__(parent)
 
         # 1 Import the database
-        self.list_dcdc_database, self.list_psu_database, self.list_consumer_database = loading_database()
+        self.list_dcdc_database, self.list_psu_database, self.list_ldo_database, self.list_consumer_database = loading_database()
 
         # 2 Graphical widget
         # DC/DC
@@ -46,15 +47,23 @@ class AddElement(QTabWidget):
         self.widget_psu.setLayout(self.tab_psu_layout)
         self.tab_psu.setWidget(self.widget_psu)
 
-        # CONSUMER
+        # LDO
+        self.tab_ldo = QScrollArea()
+        self.widget_ldo = QWidget()
+        self.tab_ldo_layout = QVBoxLayout()
+        for ldo in self.list_ldo_database:
+            self.select_ldo_widget = SelectLdoWidget(ldo)
+            self.select_ldo_widget.clicked_add_ldo.connect(self.send_element_selected)
+            self.tab_ldo_layout.addWidget(self.select_ldo_widget)
+        self.widget_ldo.setLayout(self.tab_ldo_layout)
+        self.tab_ldo.setWidget(self.widget_ldo)
 
+        # CONSUMER
         self.tab_consumer = AddComponentConsumer(self.list_consumer_database)
         self.tab_consumer.add_consumer.connect(self.send_element_selected)
 
         # TODO : SWITCH
         self.tab_switch = QScrollArea()
-        # TODO : LDO
-        self.tab_ldo = QScrollArea()
 
         self.addTab(self.tab_dcdc, "DC/DC")
         self.addTab(self.tab_psu, "PSU")
@@ -94,7 +103,7 @@ class SelectDcdcWidget(QGroupBox):
         self.voltage_input_label = QLabel("Vin : " + str(self.dcdc_copy.voltage_input_min) + " V - " +
                                           str(self.dcdc_copy.voltage_input_max) + " V")
         self.voltage_output_label = QLabel("Vout : " + str(self.dcdc_copy.voltage_output_min) + " V - " +
-                                          str(self.dcdc_copy.voltage_output_max) + " V")
+                                           str(self.dcdc_copy.voltage_output_max) + " V")
         self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
@@ -128,9 +137,11 @@ class SelectDcdcWidget(QGroupBox):
     def clicked_button_function(self):
         if self.name.displayText() != "" and self.v_in.displayText() != "" and self.v_out.displayText() != "":
 
-            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.displayText()) <= float(self.dcdc_copy.voltage_input_max):
+            if float(self.dcdc_copy.voltage_input_min) <= float(self.v_in.displayText()) <= float(
+                    self.dcdc_copy.voltage_input_max):
 
-                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.displayText()) <= float(self.dcdc_copy.voltage_output_max):
+                if float(self.dcdc_copy.voltage_output_min) <= float(self.v_out.displayText()) <= float(
+                        self.dcdc_copy.voltage_output_max):
 
                     # Add user parameters to the DC/DC
                     self.dcdc_copy.voltage_input = self.v_in.displayText()
@@ -147,6 +158,77 @@ class SelectDcdcWidget(QGroupBox):
 
                 else:
                     print("DEBUG : Output voltage is not in the DC/DC Scope !")
+            else:
+                print("DEBUG : Input voltage is not in the DC/DC Scope !")
+        else:
+            print("DEBUG : Some fields are empty !")
+
+
+class SelectLdoWidget(QGroupBox):
+    # Signal
+    clicked_add_ldo = QtCore.pyqtSignal(object)
+
+    def __init__(self, ldo: LdoWidget, parent=None):
+        super(SelectLdoWidget, self).__init__(parent)
+
+        # Get dcdc from database
+        self.ldo_copy = ldo
+
+        # creation of widget & layout
+        self.layout = QHBoxLayout()
+        self.layout_1 = QVBoxLayout()
+        self.layout_2 = QGridLayout()
+        self.add_ldo_button = QPushButton("Add")
+        self.name_label = QLabel("Name : ")
+        self.name = QLineEdit()
+        self.v_in_label = QLabel("Vin : ")
+        self.v_in = QLineEdit()
+        self.current_label = QLabel(str(self.ldo_copy.current_max) + " A")
+        self.voltage_input_label = QLabel("Vin : " + str(self.ldo_copy.voltage_input_min) + " V - " +
+                                          str(self.ldo_copy.voltage_input_max) + " V")
+        self.voltage_output_label = QLabel("Vout : " + str(self.ldo_copy.voltage_output) + " V")
+        self.label_restriction = QDoubleValidator(0, 100, 2)
+
+        # layout
+        self.layout_2.addWidget(self.name_label, 0, 0)
+        self.layout_2.addWidget(self.name, 0, 1)
+        self.layout_2.addWidget(self.v_in_label, 1, 0)
+        self.layout_2.addWidget(self.v_in, 1, 1)
+        self.layout_2.addWidget(self.add_ldo_button, 2, 0, 1, 2)
+
+        self.layout_1.addWidget(self.current_label)
+        self.layout_1.addWidget(self.voltage_input_label)
+        self.layout_1.addWidget(self.voltage_output_label)
+
+        self.layout.addLayout(self.layout_1)
+        self.layout.addLayout(self.layout_2)
+
+        # Widget settings
+        self.add_ldo_button.clicked.connect(self.clicked_button_function)
+        # self.add_dcdc_button.setFixedSize(150, 25)
+        self.name.setFixedSize(150, 25)
+        self.v_in.setFixedSize(150, 25)
+        # self.v_in.setValidator(self.label_restriction)
+        self.setTitle(self.ldo_copy.ref_component)
+        self.setLayout(self.layout)
+
+    def clicked_button_function(self):
+        if self.name.displayText() != "" and self.v_in.displayText() != "":
+
+            if float(self.ldo_copy.voltage_input_min) <= float(self.v_in.displayText()) <= float(
+                    self.ldo_copy.voltage_input_max):
+
+                # Add user parameters to the DC/DC
+                self.ldo_copy.voltage_input = self.v_in.displayText()
+                self.ldo_copy.name = self.name.displayText()
+
+                # Send dcdc_selected signal
+                self.clicked_add_ldo.emit(self.ldo_copy)
+
+                # Clear parameters
+                self.name.setText("")
+                self.v_in.setText("")
+
             else:
                 print("DEBUG : Input voltage is not in the DC/DC Scope !")
         else:
