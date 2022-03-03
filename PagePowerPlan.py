@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView, QGraphicsRectItem
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
 from PyQt5 import QtCore
-from DcdcWidget import DcdcWidget
-from PsuWidget import PsuWidget
-from LdoWidget import LdoWidget
-from ConsumerWidget import ConsumerWidget
+from Components.DcdcWidget import DcdcWidget
+from Components.PsuWidget import PsuWidget
+from Components.LdoWidget import LdoWidget
+from Components.ConsumerWidget import ConsumerWidget
 from Arrow import Arrow
 
 

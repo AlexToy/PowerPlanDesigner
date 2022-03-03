@@ -1,44 +1,37 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget, \
-    QWidget
-from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget
 from PyQt5 import QtCore
+from Components.GraphicsProxyWidget import GraphicsProxyWidget
 
 INITIAL_POS_X = 50
 INITIAL_POS_Y = 50
 
 
-class DcdcWidget(QWidget):
+class LdoWidget(QWidget):
     # Signal
     widget_selected = QtCore.pyqtSignal(object)
 
-    def __init__(self, ref_component: str, supplier: str, current_max: float, mode: str, equivalence_code: str,
-                 voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
-                 voltage_output_max: float, formula_list, parent=None):
-        super(DcdcWidget, self).__init__(parent)
+    def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
+                 voltage_input_min: float, voltage_input_max: float, voltage_output: float, parent=None):
+        super(LdoWidget, self).__init__(parent)
 
         #  Fixed parameters
         self.ref_component = ref_component
         self.supplier = supplier
         self.current_max = current_max
-        self.mode = mode
         self.equivalence_code = equivalence_code
         self.voltage_input_min = voltage_input_min
         self.voltage_input_max = voltage_input_max
-        self.voltage_output_min = voltage_output_min
-        self.voltage_output_max = voltage_output_max
-        self.formula_list = formula_list
-        self.component = "DCDC"
+        self.voltage_output = voltage_output
+        self.component = "LDO"
 
         # Dynamic parameters
         self.name = ""
         self.signal_control = 0
         self.voltage_input = 0
-        self.voltage_output = 0
         self.current_input = 0
         self.current_output = 0
         self.power_input = 0
         self.power_output = 0
-        self.efficiency = 0
         self.power_dissipation = 0
 
         # UI Parameters
@@ -46,7 +39,6 @@ class DcdcWidget(QWidget):
         self.current_in_label = QLabel()
         self.power_in_label = QLabel()
         self.power_dissipation_label = QLabel()
-        self.efficiency_label = QLabel()
         self.voltage_out_label = QLabel()
         self.current_out_label = QLabel()
         self.power_out_label = QLabel()
@@ -62,7 +54,7 @@ class DcdcWidget(QWidget):
     def ui_init(self):
         self.proxy_widget.widget_clicked.connect(self.send_widget)
         grp_box = QGroupBox()
-        grp_box.setObjectName("DCDC_GrpBox")
+        grp_box.setObjectName("LDO_GrpBox")
         # Layouts
         v_layout = QVBoxLayout()
         h_layout_1 = QHBoxLayout()
@@ -70,7 +62,7 @@ class DcdcWidget(QWidget):
         grid_layout = QGridLayout()
 
         # Line 1
-        component_label = QLabel("DCDC ")
+        component_label = QLabel("LDO ")
         current_max_label = QLabel(str(self.current_max) + " A")
         h_layout_1.addWidget(component_label)
         h_layout_1.addWidget(current_max_label)
@@ -104,9 +96,7 @@ class DcdcWidget(QWidget):
 
         # DC/DC Consumption
         self.power_dissipation_label.setText("- " + str(self.power_dissipation) + " mW")
-        self.efficiency_label.setText("- %")
-        grid_layout.addWidget(self.power_dissipation_label, 2, 1)
-        grid_layout.addWidget(self.efficiency_label, 3, 1)
+        grid_layout.addWidget(self.power_dissipation_label, 3, 1)
 
         # Output
         output_label = QLabel("Output")
@@ -138,21 +128,6 @@ class DcdcWidget(QWidget):
         self.proxy_widget.setWidget(grp_box)
 
         return self.proxy_widget
-
-    def update_efficiency_value(self):
-        for formula in self.formula_list:
-            # Look for the same voltage input & voltage output
-            if formula.voltage_input == float(self.voltage_input) and \
-                    formula.voltage_output == float(self.voltage_output):
-                formula_str = formula.get_formula_efficiency(self.current_output)
-                self.efficiency = eval(formula_str.replace("x", str(self.current_output/1000)))
-                print("DEBUG : New efficiency : " + str(self.efficiency))
-                return
-            # TODO : Look for the closest formula if the voltage input/output are not in the list of formula
-            else:
-                self.efficiency = 85
-                print("DEBUG : New efficiency : " + str(self.efficiency))
-                return
 
     def add_parent(self, parent):
         if float(self.voltage_input) == float(parent.voltage_output):
@@ -225,12 +200,9 @@ class DcdcWidget(QWidget):
                 self.power_output = float(self.power_output) + float(child.power_input)
         self.current_output = float(self.power_output) / float(self.voltage_output)
 
-        # Efficiency parameter
-        self.update_efficiency_value()
-
         # Editing input parameters
-        self.power_input = float(self.power_output) * (float(self.efficiency) / 100)
-        self.current_input = float(self.power_input) / float(self.voltage_input)
+        self.current_input = self.current_output
+        self.power_input = self.current_input * float(self.voltage_input)
 
         # Power dissipation parameter
         self.power_dissipation = self.power_output - self.power_input
@@ -244,11 +216,8 @@ class DcdcWidget(QWidget):
         self.current_in_label.setText(str(round(self.current_input, 1)) + " mA")
         self.power_in_label.setText(str(round(self.power_input, 1)) + " mW")
 
-        # Efficiency parameter
-        self.efficiency_label.setText(str(round(self.efficiency, 1)) + " %")
-
         # Output parameters
-        self.voltage_out_label.setText(self.voltage_output + " V")
+        self.voltage_out_label.setText(str(self.voltage_output) + " V")
         self.current_out_label.setText(str(round(self.current_output, 1)) + " mA")
         self.power_out_label.setText(str(round(self.power_output, )) + " mW")
 
@@ -261,48 +230,3 @@ class DcdcWidget(QWidget):
 
     def send_widget(self):
         self.widget_selected.emit(self)
-
-
-class GraphicsProxyWidget(QGraphicsProxyWidget):
-
-    # Signal
-    widget_clicked = QtCore.pyqtSignal()
-    new_widget_position = QtCore.pyqtSignal(float, float)
-
-    def __init__(self, parent=None):
-        super(GraphicsProxyWidget, self).__init__(parent)
-
-        self.updated_cursor_x = 0
-        self.updated_cursor_y = 0
-        self.height = 0
-        self.width = 0
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.RightButton:
-            self.move_grpbox = True
-        elif event.button() == Qt.LeftButton:
-            self.move_grpbox = False
-            # Send to the page power plan the widget
-            self.widget_clicked.emit()
-
-    def mouseMoveEvent(self, event):
-        if self.move_grpbox:
-            orig_cursor_position = event.lastScenePos()
-            updated_cursor_position = event.scenePos()
-
-            orig_position = self.scenePos()
-
-            self.updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-            self.updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-            self.setPos(QPointF(self.updated_cursor_x, self.updated_cursor_y))
-
-            # Send the new position to the arrow
-            self.new_widget_position.emit(self.updated_cursor_x, self.updated_cursor_y)
-
-    def mouseReleaseEvent(self, event):
-        pass
-
-    def resizeEvent(self, event):
-        self.height = event.newSize().height()
-        self.width = event.newSize().width()
-

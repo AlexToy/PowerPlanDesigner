@@ -1,9 +1,9 @@
 import openpyxl
 from typing import List
-from DcdcWidget import DcdcWidget
-from PsuWidget import PsuWidget
-from ConsumerWidget import ConsumerWidget
-from LdoWidget import LdoWidget
+from Components.DcdcWidget import DcdcWidget
+from Components.PsuWidget import PsuWidget
+from Components.LdoWidget import LdoWidget
+from Components.ConsumerWidget import ConsumerWidget
 from Formula import Formula
 
 # DCDC DATABASE

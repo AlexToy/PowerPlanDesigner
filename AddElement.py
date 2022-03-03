@@ -2,12 +2,10 @@ from PyQt5.QtWidgets import QTabWidget, QScrollArea, QGroupBox, QHBoxLayout, QGr
     QLabel, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5 import QtCore
-from PyQt5.QtCore import QLocale
 from loading_database import loading_database
-from DcdcWidget import DcdcWidget
-from PsuWidget import PsuWidget
-from LdoWidget import LdoWidget
-from ConsumerWidget import ConsumerWidget
+from Components.DcdcWidget import DcdcWidget
+from Components.PsuWidget import PsuWidget
+from Components.LdoWidget import LdoWidget
 from AddComponentConsumer import AddComponentConsumer
 
 
