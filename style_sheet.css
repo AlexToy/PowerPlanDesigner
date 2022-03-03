@@ -13,6 +13,21 @@ QGroupBox#DCDC_GrpBox:title {
     background: rgb(91, 155, 213);
 }
 
+QGroupBox#PSU_GrpBox {
+    background: rgb(230, 201, 239);
+    font-weight: bold;
+    font-size: 13px;
+    padding-top: 25px;
+    border: 10px;
+}
+
+QGroupBox#PSU_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5 100px;
+    background: rgb(105, 38, 126);
+}
+
 QGroupBox#LDO_GrpBox {
     background: rgb(237, 243, 214);
     font-weight: bold;
@@ -26,6 +41,21 @@ QGroupBox#LDO_GrpBox:title {
     subcontrol-position: top center;
     padding: 5 100px;
     background: rgb(162, 192, 55);
+}
+
+QGroupBox#SWITCH_GrpBox {
+    background: rgb(247, 218, 208);
+    font-weight: bold;
+    font-size: 13px;
+    padding-top: 25px;
+    border: 10px;
+}
+
+QGroupBox#SWITCH_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 5 100px;
+    background: rgb(203, 79, 36);
 }
 
 QGroupBox#CONSUMER_GrpBox {
@@ -54,3 +84,20 @@ QLabel#Current {
 QLabel#Power {
     color: blue;
 }
+
+QGroupBox#LDO_addElement_GrpBox {
+    background: rgb(237, 243, 214);
+    font-weight: bold;
+    font-color: white;
+    font-size: 15px;
+    padding-top: 22px;
+    border: 10px;
+}
+
+QGroupBox#LDO_addElement_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top right;
+    padding: 5 100px;
+    background: rgb(162, 192, 55);
+}
+

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTabWidget, QScrollArea, QVBoxLayout, QGroupBox, QLabel, QHBoxLayout, QPushButton, QWidget
 from PyQt5 import QtCore
-from ConsumerWidget import ConsumerWidget
+from Components.ConsumerWidget import ConsumerWidget
 
 
 class AddComponentConsumer(QTabWidget):

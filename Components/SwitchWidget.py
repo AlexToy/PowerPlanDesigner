@@ -1,37 +1,41 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QGraphicsProxyWidget, \
-    QWidget
-from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget
 from PyQt5 import QtCore
+from Components.GraphicsProxyWidget import GraphicsProxyWidget
 
 INITIAL_POS_X = 50
 INITIAL_POS_Y = 50
 
 
-class LdoWidget(QWidget):
+class SwitchWidget(QWidget):
     # Signal
     widget_selected = QtCore.pyqtSignal(object)
 
-    def __init__(self, ref_component: str, supplier: str, current_max: float, equivalence_code: str,
-                 voltage_input_min: float, voltage_input_max: float, voltage_output: float, parent=None):
-        super(LdoWidget, self).__init__(parent)
+    def __init__(self, type: str, current_max: float, rds_on: float, ref_component: str, supplier: str,
+                 equivalence_code: str, voltage_input_min: float, voltage_input_max: float, voltage_bias_min,
+                 voltage_bias_max, parent=None):
+        super(SwitchWidget, self).__init__(parent)
 
         #  Fixed parameters
         self.ref_component = ref_component
         self.supplier = supplier
+        self.switch_type = type
+        self.rds_on = rds_on
         self.current_max = current_max
         self.equivalence_code = equivalence_code
         self.voltage_input_min = voltage_input_min
         self.voltage_input_max = voltage_input_max
-        self.voltage_output = voltage_output
-        self.component = "LDO"
+        self.voltage_bias_min = voltage_bias_min
+        self.voltage_bias_max = voltage_bias_max
+        self.component = "SWITCH"
 
         # Dynamic parameters
         self.name = ""
         self.signal_control = 0
         self.voltage_input = 0
-        self.current_input = 0
-        self.current_output = 0
         self.power_input = 0
+        self.current_input = 0
+        self.voltage_output = 0
+        self.current_output = 0
         self.power_output = 0
         self.power_dissipation = 0
 
@@ -55,7 +59,7 @@ class LdoWidget(QWidget):
     def ui_init(self):
         self.proxy_widget.widget_clicked.connect(self.send_widget)
         grp_box = QGroupBox()
-        grp_box.setObjectName("LDO_GrpBox")
+        grp_box.setObjectName("SWITCH_GrpBox")
         # Layouts
         v_layout = QVBoxLayout()
         h_layout_1 = QHBoxLayout()
@@ -63,7 +67,7 @@ class LdoWidget(QWidget):
         grid_layout = QGridLayout()
 
         # Line 1
-        component_label = QLabel("LDO ")
+        component_label = QLabel(self.switch_type)
         current_max_label = QLabel(str(self.current_max) + " A")
         h_layout_1.addWidget(component_label)
         h_layout_1.addWidget(current_max_label)
@@ -77,7 +81,11 @@ class LdoWidget(QWidget):
         # Line 3
         equivalence_code_label = QLabel(self.equivalence_code)
 
-        # Line 4
+        # Line if switch has a Vbias
+        if self.voltage_bias_min != "None":
+            vbias_label = QLabel("Vbias: " + str(self.voltage_bias_min) + " V - " + str(self.voltage_bias_max) + " V")
+
+        # Line 4 or 5
         line_label = QLabel("----------------------------------")
 
         # Grid Layout
@@ -117,6 +125,8 @@ class LdoWidget(QWidget):
         v_layout.addLayout(h_layout_1)
         v_layout.addLayout(h_layout_2)
         v_layout.addWidget(equivalence_code_label)
+        if self.voltage_bias_min != "None":
+            v_layout.addWidget(vbias_label)
         v_layout.addWidget(line_label)
         v_layout.addLayout(grid_layout)
 
@@ -201,12 +211,12 @@ class LdoWidget(QWidget):
                 self.power_output = float(self.power_output) + float(child.power_input)
         self.current_output = float(self.power_output) / float(self.voltage_output)
 
+        # Power dissipation parameter
+        self.power_dissipation = (self.rds_on * (self.current_output ** 2)) / 1000
+
         # Editing input parameters
         self.current_input = self.current_output
         self.power_input = self.current_input * float(self.voltage_input)
-
-        # Power dissipation parameter
-        self.power_dissipation = self.power_output - self.power_input
 
         # Update graphics parameters
         self.update_graphics_parameters()
@@ -231,47 +241,3 @@ class LdoWidget(QWidget):
 
     def send_widget(self):
         self.widget_selected.emit(self)
-
-
-class GraphicsProxyWidget(QGraphicsProxyWidget):
-
-    # Signal
-    widget_clicked = QtCore.pyqtSignal()
-    new_widget_position = QtCore.pyqtSignal(float, float)
-
-    def __init__(self, parent=None):
-        super(GraphicsProxyWidget, self).__init__(parent)
-
-        self.updated_cursor_x = 0
-        self.updated_cursor_y = 0
-        self.height = 0
-        self.width = 0
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.RightButton:
-            self.move_grpbox = True
-        elif event.button() == Qt.LeftButton:
-            self.move_grpbox = False
-            # Send to the page power plan the widget
-            self.widget_clicked.emit()
-
-    def mouseMoveEvent(self, event):
-        if self.move_grpbox:
-            orig_cursor_position = event.lastScenePos()
-            updated_cursor_position = event.scenePos()
-
-            orig_position = self.scenePos()
-
-            self.updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
-            self.updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
-            self.setPos(QPointF(self.updated_cursor_x, self.updated_cursor_y))
-
-            # Send the new position to the arrow
-            self.new_widget_position.emit(self.updated_cursor_x, self.updated_cursor_y)
-
-    def mouseReleaseEvent(self, event):
-        pass
-
-    def resizeEvent(self, event):
-        self.height = event.newSize().height()
-        self.width = event.newSize().width()
