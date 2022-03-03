@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QGraphicsScene, QGraphicsView,
 from PyQt5 import QtCore
 from DcdcWidget import DcdcWidget
 from PsuWidget import PsuWidget
+from LdoWidget import LdoWidget
 from ConsumerWidget import ConsumerWidget
 from Arrow import Arrow
 
@@ -35,13 +36,13 @@ class PagePowerPlan(QGraphicsView):
 
             # Create a copy from a database dcdc
             dcdc = element
-            new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.equivalence_code,
+            new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.mode, dcdc.equivalence_code,
                                   dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
                                   dcdc.voltage_output_max, dcdc.formula_list)
             new_dcdc.voltage_input = dcdc.voltage_input
             new_dcdc.voltage_output = dcdc.voltage_output
             new_dcdc.name = dcdc.name
-            new_dcdc.refresh_efficiency_value()
+            new_dcdc.update_efficiency_value()
 
             new_element_widget = new_dcdc
 
@@ -52,6 +53,17 @@ class PagePowerPlan(QGraphicsView):
             new_psu.name = psu.name
 
             new_element_widget = new_psu
+
+        if element.component == "LDO":
+
+            # Create a copy from a database ldo
+            ldo = element
+            new_ldo = LdoWidget(ldo.ref_component, ldo.supplier, ldo.current_max, ldo.equivalence_code,
+                                  ldo.voltage_input_min, ldo.voltage_input_max, ldo.voltage_output)
+            new_ldo.voltage_input = ldo.voltage_input
+            new_ldo.name = ldo.name
+
+            new_element_widget = new_ldo
 
         elif element.component == "Consumer":
             consumer = element
