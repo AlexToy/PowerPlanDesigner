@@ -44,6 +44,7 @@ class PsuWidget(QWidget):
 
     def ui_init(self):
         grp_box = QGroupBox()
+        grp_box.setObjectName("PSU_GrpBox")
         self.proxy_widget.widget_clicked.connect(self.send_widget)
 
         layout = QGridLayout()

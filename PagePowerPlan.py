@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
+from Components.SwitchWidget import SwitchWidget
 from Components.ConsumerWidget import ConsumerWidget
 from Arrow import Arrow
 
@@ -54,7 +55,7 @@ class PagePowerPlan(QGraphicsView):
 
             new_element_widget = new_psu
 
-        if element.component == "LDO":
+        elif element.component == "LDO":
 
             # Create a copy from a database ldo
             ldo = element
@@ -64,6 +65,18 @@ class PagePowerPlan(QGraphicsView):
             new_ldo.name = ldo.name
 
             new_element_widget = new_ldo
+
+        elif element.component == "SWITCH":
+
+            # Create a copy from a database switch
+            switch = element
+            new_switch = SwitchWidget(switch.switch_type, switch.current_max, switch.rds_on, switch.ref_component, switch.supplier,
+                                      switch.equivalence_code, switch.voltage_input_min, switch.voltage_input_max,
+                                      switch.voltage_bias_min, switch.voltage_bias_max)
+            new_switch.voltage_input = switch.voltage_input
+            new_switch.name = switch.name
+
+            new_element_widget = new_switch
 
         elif element.component == "Consumer":
             consumer = element

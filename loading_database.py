@@ -3,6 +3,7 @@ from typing import List
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
+from Components.SwitchWidget import SwitchWidget
 from Components.ConsumerWidget import ConsumerWidget
 from Formula import Formula
 
@@ -36,6 +37,18 @@ PSU_VOLTAGE_IN = 5
 PSU_VOLTAGE_OUT = 6
 PSU_JACK = 7
 
+# SWITCH DATABASE
+SWITCH_TYPE = 1
+SWITCH_I_LIM = 2
+SWITCH_RDS_ON = 3
+SWITCH_REF_COMPONENT = 4
+SWITCH_SUPPLIER = 5
+SWITCH_EQUIVALENCE_CODE = 6
+SWITCH_VOLTAGE_IN_MIN = 7
+SWITCH_VOLTAGE_IN_MAX = 8
+SWITCH_VBIAS_MIN = 9
+SWITCH_VBIAS_MAX = 10
+
 # CONSUMER DATABASE
 CONSUMER_TYPE = 1
 CONSUMER_SUPPLIER = 2
@@ -61,6 +74,8 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             sheet_psu = sheet
         elif sheet.title == "LDO":
             sheet_ldo = sheet
+        elif sheet.title == "SWITCH":
+            sheet_switch = sheet
 
     print("Loading database ...")
 
@@ -120,6 +135,26 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             ldo_list.append(LdoWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
                                       voltage_input_max, voltage_output))
 
+    # Loading SWITCH DATABASE
+    switch_list = []
+    line = 1
+    for _ in sheet_switch:
+        line = line + 1
+        if str(sheet_switch.cell(line, 1).value) != "None":
+            type = str(sheet_switch.cell(line, SWITCH_TYPE).value)
+            current_max = float(sheet_switch.cell(line, SWITCH_I_LIM).value)
+            rds_on = float(sheet_switch.cell(line, SWITCH_RDS_ON).value)
+            ref_component = str(sheet_switch.cell(line, SWITCH_REF_COMPONENT).value)
+            supplier = str(sheet_switch.cell(line, SWITCH_SUPPLIER).value)
+            equivalence_code = str(sheet_switch.cell(line, SWITCH_EQUIVALENCE_CODE).value)
+            voltage_input_min = float(sheet_switch.cell(line, SWITCH_VOLTAGE_IN_MIN).value)
+            voltage_input_max = float(sheet_switch.cell(line, SWITCH_VOLTAGE_IN_MAX).value)
+            voltage_bias_min = str(sheet_switch.cell(line, SWITCH_VBIAS_MIN).value)
+            voltage_bias_max = str(sheet_switch.cell(line, SWITCH_VBIAS_MAX).value)
+
+            switch_list.append(SwitchWidget(type, current_max, rds_on, ref_component, supplier, equivalence_code,
+                                            voltage_input_min, voltage_input_max, voltage_bias_min, voltage_bias_max))
+
     # Loading CONSUMER DATABASE
     input_file_consumer_database = openpyxl.load_workbook(FILE_CONSUMER_DATA_BASE, read_only=True)
     consumer_list = []
@@ -147,4 +182,4 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
                                                     current_min_measure, current_max_measure, current_peak_measure))
 
     print("Database loaded !")
-    return dcdc_list, psu_list, ldo_list, consumer_list
+    return dcdc_list, psu_list, ldo_list, consumer_list, switch_list
