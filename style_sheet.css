@@ -84,3 +84,20 @@ QLabel#Current {
 QLabel#Power {
     color: blue;
 }
+
+QGroupBox#LDO_addElement_GrpBox {
+    background: rgb(237, 243, 214);
+    font-weight: bold;
+    font-color: white;
+    font-size: 15px;
+    padding-top: 22px;
+    border: 10px;
+}
+
+QGroupBox#LDO_addElement_GrpBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top right;
+    padding: 5 100px;
+    background: rgb(162, 192, 55);
+}
+

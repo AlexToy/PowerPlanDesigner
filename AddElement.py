@@ -181,6 +181,7 @@ class SelectLdoWidget(QGroupBox):
 
         # Get dcdc from database
         self.ldo_copy = ldo
+        self.setObjectName("LDO_addElement_GrpBox")
 
         # creation of widget & layout
         self.layout = QHBoxLayout()
@@ -191,10 +192,9 @@ class SelectLdoWidget(QGroupBox):
         self.name = QLineEdit()
         self.v_in_label = QLabel("Vin : ")
         self.v_in = QLineEdit()
-        self.current_label = QLabel(str(self.ldo_copy.current_max) + " A")
-        self.voltage_input_label = QLabel("Vin : " + str(self.ldo_copy.voltage_input_min) + " V - " +
-                                          str(self.ldo_copy.voltage_input_max) + " V")
-        self.voltage_output_label = QLabel("Vout : " + str(self.ldo_copy.voltage_output) + " V")
+        self.equiv_code_label = QLabel(str(self.ldo_copy.equivalence_code))
+        self.ref_label = QLabel(self.ldo_copy.ref_component)
+        self.supplier_label = QLabel(self.ldo_copy.supplier)
         self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
@@ -204,9 +204,9 @@ class SelectLdoWidget(QGroupBox):
         self.layout_2.addWidget(self.v_in, 1, 1)
         self.layout_2.addWidget(self.add_ldo_button, 2, 0, 1, 2)
 
-        self.layout_1.addWidget(self.current_label)
-        self.layout_1.addWidget(self.voltage_input_label)
-        self.layout_1.addWidget(self.voltage_output_label)
+        self.layout_1.addWidget(self.supplier_label)
+        self.layout_1.addWidget(self.ref_label)
+        self.layout_1.addWidget(self.equiv_code_label)
 
         self.layout.addLayout(self.layout_1)
         self.layout.addLayout(self.layout_2)
@@ -217,7 +217,8 @@ class SelectLdoWidget(QGroupBox):
         self.name.setFixedSize(150, 25)
         self.v_in.setFixedSize(150, 25)
         # self.v_in.setValidator(self.label_restriction)
-        self.setTitle(self.ldo_copy.ref_component)
+        self.setTitle("LDO     " + str(self.ldo_copy.voltage_output) + " V     " +
+                      str(self.ldo_copy.current_max * 1000) + " mA")
         self.setLayout(self.layout)
 
     def clicked_button_function(self):
