@@ -63,7 +63,8 @@ class LdoWidget(QWidget):
 
         # Line 1
         component_label = QLabel("LDO ")
-        current_max_label = QLabel(str(self.current_max) + " A")
+        component_label.setStyleSheet("font: bold")
+        current_max_label = QLabel(str(self.current_max * 1000) + " mA")
         h_layout_1.addWidget(component_label)
         h_layout_1.addWidget(current_max_label)
 
