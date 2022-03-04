@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QToolBar, QMenu
 from PyQt5 import QtCore
 from PagePowerPlan import PagePowerPlan
-from AddElement import AddElement
+from Component_Search.AddElement import AddElement
 
 
 class MainWindow(QMainWindow):

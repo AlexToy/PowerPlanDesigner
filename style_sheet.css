@@ -86,17 +86,18 @@ QLabel#Power {
 }
 
 QGroupBox#LDO_addElement_GrpBox {
-    background: rgb(237, 243, 214);
     font-weight: bold;
-    font-color: white;
-    font-size: 15px;
+    font-size: 12px;
     padding-top: 22px;
-    border: 10px;
+    border-style: outset;
+    border-width: 2px;
+    border-color: rgb(162, 192, 55);
+    background: rgb(237, 243, 214);
 }
 
 QGroupBox#LDO_addElement_GrpBox:title {
     subcontrol-origin: margin;
-    subcontrol-position: top right;
+    subcontrol-position: right top;
     padding: 5 100px;
     background: rgb(162, 192, 55);
 }

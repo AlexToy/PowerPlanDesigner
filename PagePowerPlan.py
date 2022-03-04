@@ -17,7 +17,7 @@ class PagePowerPlan(QGraphicsView):
 
         # Widget for pagePowerPlan
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 500, 500);
+        self.scene.setSceneRect(0, 0, 1000, 1000);
 
         self.setScene(self.scene)
 
@@ -74,6 +74,7 @@ class PagePowerPlan(QGraphicsView):
                                       switch.equivalence_code, switch.voltage_input_min, switch.voltage_input_max,
                                       switch.voltage_bias_min, switch.voltage_bias_max)
             new_switch.voltage_input = switch.voltage_input
+            new_switch.voltage_output = switch.voltage_input
             new_switch.name = switch.name
 
             new_element_widget = new_switch
