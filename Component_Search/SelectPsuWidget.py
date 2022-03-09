@@ -48,3 +48,9 @@ class SelectPsuWidget(QGroupBox):
             self.name.setText("")
         else:
             print("DEBUG : The name is empty !")
+
+    def get_widget_filters(self):
+        return self.psu.list_filter
+
+    def get_widget(self):
+        return self.psu

@@ -23,6 +23,7 @@ class LdoWidget(QWidget):
         self.voltage_input_max = voltage_input_max
         self.voltage_output = voltage_output
         self.component = "LDO"
+        self.list_filter = {"Output voltage": self.voltage_output, "Current max": self.current_max}
 
         # Dynamic parameters
         self.name = ""

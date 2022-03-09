@@ -1,7 +1,103 @@
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, QLabel, QVBoxLayout, \
+    QScrollArea, QWidget, QStackedWidget, QComboBox, QButtonGroup, QRadioButton, QDialog
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5 import QtCore
 from Components.LdoWidget import LdoWidget
+
+
+class TabLdo(QScrollArea):
+    # Signal
+    component_selected = QtCore.pyqtSignal(object)
+
+    def __init__(self, list_ldo_database, parent=None):
+        super(TabLdo, self).__init__(parent)
+
+        # Init layout
+        init_widget = QWidget()
+        init_layout = QVBoxLayout()
+        init_widget.setLayout(init_layout)
+
+        # Add init layout in the tab component
+        self.tab_ldo_widget = QStackedWidget()
+        self.tab_ldo_widget.addWidget(init_widget)
+
+        # Button and Combobox filter
+        button_select_filter = QPushButton()
+        button_select_filter.clicked.connect(self.view_add_filters)
+        self.select_filter_combobox = QComboBox()
+        layout_widget_filter = QHBoxLayout()
+        layout_widget_filter.addWidget(self.select_filter_combobox)
+        layout_widget_filter.addWidget(button_select_filter)
+        init_layout.addLayout(layout_widget_filter)
+        self.list_filters = 0
+
+        for ldo in list_ldo_database:
+            self.select_ldo_widget = SelectLdoWidget(ldo)
+            self.select_ldo_widget.clicked_add_component.connect(self.send_component)
+            self.list_selected_ldo.append(self.select_ldo_widget)
+            init_layout.addWidget(self.select_ldo_widget)
+
+        self.tab_ldo_widget.setCurrentIndex(0)
+        self.setWidget(self.tab_ldo_widget)
+
+    def send_component(self, element):
+        self.component_selected.emit(element)
+
+    def view_add_filters(self):
+        # This function create a QDialog where the user must choose a filter from a list.
+        # Create widgets and layout
+        layout = QVBoxLayout()
+        button_grp = QButtonGroup()
+        add_button = QPushButton("Add")
+        add_button.clicked.connect(self.add_filter)
+
+        # Get the list of filter (Request this information from the last added widget)
+        self.list_filters = self.select_component_widget.get_widget_filters()
+
+        for idx, filter in enumerate(self.list_filters):
+            # For every filter, create a radio button
+            button = QRadioButton()
+            button.setText(filter)
+            self.dict_idx_filter_name.update({idx: filter})
+            button_grp.addButton(button, idx)
+            layout.addWidget(button)
+
+        layout.addWidget(add_button)
+        msg_box = QDialog()
+        msg_box.setLayout(layout)
+        msg_box.exec_()
+
+    def add_filter(self):
+
+        list_value_filter = []
+        dict_filter_idx_layout = {}
+        idx = 0
+
+        # Get the filter was selected with the current idx of button grp
+        name_filter_selected = self.dict_idx_filter_name[self.button_grp.checkedId()]
+
+        # For every widget on the Tab Component
+        for selected_ldo in self.list_selected_ldo:
+            # get the value of the filter
+            value_filter = selected_ldo.get_widget_filters()[name_filter_selected]
+            # if it doesn't exist, add the value to the combobox
+            if value_filter not in list_value_filter:
+                idx = idx + 1
+                list_value_filter.append(value_filter)
+                self.select_filter_combobox.addItem(str(value_filter))
+
+                # TODO : Create a stacked widget
+
+                # Create a dict with filter and index of stackedWidget
+                dict_filter_idx_layout.update({value_filter: idx})
+
+
+class FilteredLayoutWidget(QWidget):
+    def __init__(self, list_selected_ldo, , parent=None):
+        super(FilteredLayoutWidget, self).__init__(parent)
+
+        layout = QVBoxLayout()
+
 
 
 class SelectLdoWidget(QGroupBox):
@@ -74,3 +170,6 @@ class SelectLdoWidget(QGroupBox):
                 print("DEBUG : Input voltage is not in the DC/DC Scope !")
         else:
             print("DEBUG : Some fields are empty !")
+
+    def get_widget_filters(self):
+        return self.ldo_copy.list_filter

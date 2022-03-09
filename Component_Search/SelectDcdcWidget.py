@@ -89,3 +89,9 @@ class SelectDcdcWidget(QGroupBox):
                 print("DEBUG : Input voltage is not in the DC/DC Scope !")
         else:
             print("DEBUG : Some fields are empty !")
+
+    def get_widget_filters(self):
+        return self.dcdc_copy.list_filter
+
+    def get_widget(self):
+        return self.dcdc_copy
