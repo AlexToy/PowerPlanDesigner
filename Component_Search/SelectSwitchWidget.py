@@ -74,7 +74,13 @@ class SelectSwitchWidget(QGroupBox):
             print("DEBUG : Some fields are empty !")
 
     def get_widget_filters(self):
-        return self.switch_copy.list_filter
+        return self.switch_copy.dict_filters
 
-    def get_widget(self):
-        return self.switch_copy
+    def get_name(self):
+        return self.switch_copy.ref_component
+
+    def value_is_present(self, filter_name, try_value):
+        if self.switch_copy.dict_filters[filter_name] == try_value:
+            return True
+        else:
+            return False

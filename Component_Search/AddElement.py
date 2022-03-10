@@ -54,6 +54,13 @@ class TabComponent(QScrollArea):
     def __init__(self, list_component_database, parent=None):
         super(TabComponent, self).__init__(parent)
 
+        widget = QWidget()
+        layout = QVBoxLayout()
+        widget.setLayout(layout)
+        self.msg_box = QDialog()
+        self.view_created = False
+        self.dict_value_layout = {}
+
         # Init layout
         init_widget = QWidget()
         init_layout = QVBoxLayout()
@@ -64,18 +71,19 @@ class TabComponent(QScrollArea):
         self.tab_component_widget.addWidget(init_widget)
 
         self.list_selected_widget = []
-        self.view_filter = 0
         self.button_grp = 0
-        self.list_filters = 0
+        self.dict_filters = 0
         self.dict_idx_filter_name = {}
 
         button_filter = QPushButton()
         button_filter.clicked.connect(self.view_filters)
         self.select_filter = QComboBox()
+        self.select_filter.currentIndexChanged.connect(self.value_filter_change)
         layout_filter = QHBoxLayout()
         layout_filter.addWidget(self.select_filter)
         layout_filter.addWidget(button_filter)
-        init_layout.addLayout(layout_filter)
+        layout.addLayout(layout_filter)
+        layout.addWidget(self.tab_component_widget)
 
         for component in list_component_database:
             if component.component == "DCDC":
@@ -91,71 +99,93 @@ class TabComponent(QScrollArea):
             self.list_selected_widget.append(self.select_component_widget)
             init_layout.addWidget(self.select_component_widget)
 
-        self.setWidget(init_widget)
+        self.setWidget(widget)
 
     def send_component(self, element):
         self.component_selected.emit(element)
 
     def view_filters(self):
         # This function create a QDialog where the user must choose a filter from a list.
+        if not self.view_created:
+            # Create widgets and layout
+            layout = QVBoxLayout()
+            self.button_grp = QButtonGroup()
+            add_button = QPushButton("Add")
+            add_button.clicked.connect(self.add_filter)
 
-        # Create widgets and layout
-        layout = QVBoxLayout()
-        self.button_grp = QButtonGroup()
-        add_button = QPushButton("Add")
-        add_button.clicked.connect(self.add_filter)
+            # Get the list of filter (Request this information from the last added widget)
+            self.dict_filters = self.select_component_widget.get_widget_filters()
 
-        # Get the list of filter (Request this information from the last added widget)
-        self.list_filters = self.select_component_widget.get_widget_filters()
+            for idx, filter in enumerate(self.dict_filters):
+                # For every filter, create a radio button
+                button = QRadioButton()
+                button.setText(filter)
+                self.dict_idx_filter_name.update({idx: filter})
+                self.button_grp.addButton(button, idx)
+                layout.addWidget(button)
 
-        for idx, filter in enumerate(self.list_filters):
-            # For every filter, create a radio button
-            button = QRadioButton()
-            button.setText(filter)
-            self.dict_idx_filter_name.update({idx: filter})
-            self.button_grp.addButton(button, idx)
-            layout.addWidget(button)
-
-        layout.addWidget(add_button)
-        msg_box = QDialog()
-        msg_box.setLayout(layout)
-        msg_box.exec_()
+            layout.addWidget(add_button)
+            self.msg_box.setLayout(layout)
+            self.view_created = True
+        self.msg_box.exec_()
 
     def add_filter(self):
-
-        list_value = []
-        dict_filter_idx_layout = {}
-        idx = 0
+        self.select_filter.clear()
+        self.msg_box.close()
+        list_different_value = []
 
         # Get the filter was selected
-        filter_selected = self.dict_idx_filter_name[self.button_grp.checkedId()]
-        print("Filtre Selected : " + str(filter_selected))
+        filter_name_selected = self.dict_idx_filter_name[self.button_grp.checkedId()]
 
-        # For every widget on the Tab Component
+        # 1 : Find in list of component the different value for the selected filter
+        # For every widget on the Tab Component (Ldo or DCDC or Switch ...)
         for selected_widget in self.list_selected_widget:
-            print("selected_widget : " + str(selected_widget))
+
             # get the value of the filter
-            value = selected_widget.get_widget_filters()[filter_selected]
-            # if it doesn't exist, add the value to the combobox
-            if value not in list_value:
-                print("value : " + str(value))
-                idx = idx + 1
-                list_value.append(value)
-                self.select_filter.addItem(str(value))
-                # Create a dict with filter and index of stackedWidget
-                dict_filter_idx_layout.update({value: idx})
+            filter_value_selected = selected_widget.get_widget_filters()[filter_name_selected]
 
-        # For every value, create a new layout with the corresponding widget of the value
-        for value in list_value:
-            new_widget = QWidget()
-            new_layout = QVBoxLayout()
-            new_widget.setLayout(new_layout)
-            self.tab_component_widget.addWidget(new_widget)
+            # if it doesn't exist
+            if filter_value_selected not in list_different_value:
+                # add the value
+                list_different_value.append(filter_value_selected)
+                self.select_filter.addItem(str(filter_value_selected))
 
-            for widget in self.list_selected_widget:
-                # If the filter of the widget contens the value, add on the page
-                if widget.get_widget().component == "DCDC":
+        # 2 : For every different value, create a widget (QStackedWidget) and add every selected widget witch
+        # correspond
+        for value in list_different_value:
 
+            # Create the page for the new value of the filter
+            # If the page doesn't already exist, create it
+            if value not in self.dict_value_layout:
+
+                new_widget = QWidget()
+                new_layout = QVBoxLayout()
+                new_widget.setLayout(new_layout)
+
+                for selected_widget in self.list_selected_widget:
+
+                    if selected_widget.value_is_present(filter_name_selected, value):
+                        new_layout.addWidget(selected_widget)
+
+                self.tab_component_widget.addWidget(new_widget)
+
+                # Add the value and his index in a dict
+                self.dict_value_layout.update({str(value): new_widget})
 
         # print the good stackedLayout
-        self.tab_component_widget.setCurrentIndex(dict_filter_idx_layout[value])
+        self.tab_component_widget.setCurrentWidget(self.dict_value_layout[str(value)])
+
+        current_filter = str(self.select_filter.currentText())
+        for value in self.dict_value_layout:
+            if value == current_filter:
+                current_widget = self.dict_value_layout[value]
+                self.tab_component_widget.setCurrentWidget(current_widget)
+
+    def value_filter_change(self, index):
+        current_filter = str(self.select_filter.currentText())
+        for value in self.dict_value_layout:
+            if value == current_filter:
+                current_widget = self.dict_value_layout[value]
+                self.tab_component_widget.setCurrentWidget(current_widget)
+
+

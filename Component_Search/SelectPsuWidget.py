@@ -50,7 +50,13 @@ class SelectPsuWidget(QGroupBox):
             print("DEBUG : The name is empty !")
 
     def get_widget_filters(self):
-        return self.psu.list_filter
+        return self.psu.dict_filters
 
-    def get_widget(self):
-        return self.psu
+    def get_name(self):
+        return self.psu.ref_component
+
+    def value_is_present(self, filter_name, try_value):
+        if self.psu.dict_filters[filter_name] == try_value:
+            return True
+        else:
+            return False

@@ -25,7 +25,7 @@ class PsuWidget(QWidget):
         self.voltage_input = voltage_input
         self.jack = jack
         self.component = "PSU"
-        self.list_filter = {"Output voltage": self.voltage_output, "Current max": self.current_max}
+        self.dict_filters = {"Output voltage": self.voltage_output, "Current max": self.current_max}
 
         # Dynamic parameters
         self.name = ""
