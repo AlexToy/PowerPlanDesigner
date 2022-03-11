@@ -27,6 +27,7 @@ class SwitchWidget(QWidget):
         self.voltage_bias_min = voltage_bias_min
         self.voltage_bias_max = voltage_bias_max
         self.component = "SWITCH"
+        self.dict_filters = {"Switch type": self.switch_type}
 
         # Dynamic parameters
         self.name = ""

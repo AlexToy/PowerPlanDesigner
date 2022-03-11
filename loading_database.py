@@ -160,11 +160,9 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
     consumer_list = []
     line = 1
     for sheet_consumer in input_file_consumer_database:
-        print("sheet : " + str(sheet_consumer.title))
         line = 1
         for _ in sheet_consumer:
             line = line + 1
-            print("     line : " + str(line))
             if str(sheet_consumer.cell(line, 1).value) != "None":
                 type = str(sheet_consumer.cell(line, CONSUMER_TYPE).value)
                 supplier = str(sheet_consumer.cell(line, CONSUMER_SUPPLIER).value)

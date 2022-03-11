@@ -27,6 +27,7 @@ class DcdcWidget(QWidget):
         self.voltage_output_max = voltage_output_max
         self.formula_list = formula_list
         self.component = "DCDC"
+        self.dict_filters = {"Current max": self.current_max, "Mode":self.mode}
 
         # Dynamic parameters
         self.name = ""

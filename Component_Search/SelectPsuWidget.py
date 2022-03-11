@@ -12,6 +12,7 @@ class SelectPsuWidget(QGroupBox):
 
         # Get psu from database
         self.psu = psu
+        self.setObjectName("addElement_GrpBox")
 
         # creation of widget & layout
         self.layout = QGridLayout()
@@ -30,7 +31,7 @@ class SelectPsuWidget(QGroupBox):
         self.layout.addWidget(self.line_4, 3, 0)
         self.layout.addWidget(self.name_label, 0, 1)
         self.layout.addWidget(self.name, 0, 2)
-        self.layout.addWidget(self.add_psu_button, 4, 1)
+        self.layout.addWidget(self.add_psu_button, 3, 1, QtCore.Qt.AlignCenter)
 
         # Widget settings
         self.add_psu_button.clicked.connect(self.clicked_button_function)
@@ -48,3 +49,15 @@ class SelectPsuWidget(QGroupBox):
             self.name.setText("")
         else:
             print("DEBUG : The name is empty !")
+
+    def get_widget_filters(self):
+        return self.psu.dict_filters
+
+    def get_name(self):
+        return self.psu.ref_component
+
+    def value_is_present(self, filter_name, try_value):
+        if self.psu.dict_filters[filter_name] == try_value:
+            return True
+        else:
+            return False
