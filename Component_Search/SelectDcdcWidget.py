@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, QLabel, QVBoxLayout
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5 import QtCore
+from PyQt5 import QtCore, Qt
 from Components.DcdcWidget import DcdcWidget
 
 
@@ -13,12 +13,16 @@ class SelectDcdcWidget(QGroupBox):
 
         # Get dcdc from database
         self.dcdc_copy = dcdc
+        self.setObjectName("addElement_GrpBox")
 
         # creation of widget & layout
         self.layout = QHBoxLayout()
         self.layout_1 = QVBoxLayout()
+        self.layout_1.setSpacing(5)
         self.layout_2 = QGridLayout()
+        self.layout_2.setSpacing(10)
         self.add_dcdc_button = QPushButton("Add")
+        self.add_dcdc_button.setFixedSize(100, 30)
         self.name_label = QLabel("Name : ")
         self.name = QLineEdit()
         self.v_in_label = QLabel("Vin : ")
@@ -34,13 +38,13 @@ class SelectDcdcWidget(QGroupBox):
         self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
-        self.layout_2.addWidget(self.name_label, 0, 0)
+        self.layout_2.addWidget(self.name_label, 0, 0, QtCore.Qt.AlignCenter)
         self.layout_2.addWidget(self.name, 0, 1)
-        self.layout_2.addWidget(self.v_in_label, 1, 0)
+        self.layout_2.addWidget(self.v_in_label, 1, 0, QtCore.Qt.AlignCenter)
         self.layout_2.addWidget(self.v_in, 1, 1)
-        self.layout_2.addWidget(self.v_out_label, 2, 0)
+        self.layout_2.addWidget(self.v_out_label, 2, 0, QtCore.Qt.AlignCenter)
         self.layout_2.addWidget(self.v_out, 2, 1)
-        self.layout_2.addWidget(self.add_dcdc_button, 3, 0, 1, 2)
+        self.layout_2.addWidget(self.add_dcdc_button, 3, 0, 1, 2, QtCore.Qt.AlignCenter)
 
         self.layout_1.addWidget(self.current_label)
         self.layout_1.addWidget(self.mode_label)

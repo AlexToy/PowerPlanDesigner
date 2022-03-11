@@ -85,6 +85,19 @@ QLabel#Power {
     color: blue;
 }
 
+QGroupBox#addElement_GrpBox {
+    font-weight: bold;
+    font-size: 12px;
+    min-width: 400px;
+    max-width: 400px;
+    min-height: 170px;
+    max-height: 170px;
+}
+
+QGroupBox#addElement_GrpBox:title {
+
+}
+
 QGroupBox#LDO_addElement_GrpBox {
     font-weight: bold;
     font-size: 12px;

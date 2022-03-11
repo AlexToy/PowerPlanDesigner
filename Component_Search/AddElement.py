@@ -1,13 +1,13 @@
 from PyQt5.QtWidgets import QTabWidget, QScrollArea, QVBoxLayout, QWidget, QComboBox, QPushButton, QHBoxLayout, \
     QRadioButton, QButtonGroup, QDialog, QStackedWidget
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from loading_database import loading_database
 from Component_Search.SelectDcdcWidget import SelectDcdcWidget
 from Component_Search.SelectPsuWidget import SelectPsuWidget
 from Component_Search.SelectLdoWidget import SelectLdoWidget
 from Component_Search.SelectSwitchWidget import SelectSwitchWidget
 from Component_Search.AddComponentConsumer import AddComponentConsumer
-
+import img
 
 class AddElement(QTabWidget):
     # This class loads the database, asks the user which element they want to add to their page (graphical widget) and
@@ -42,6 +42,8 @@ class AddElement(QTabWidget):
         self.addTab(tab_consumer, "CONSUMER")
 
         self.setWindowTitle("Add new element")
+        self.setMinimumWidth(470)
+        self.setMaximumWidth(470)
 
     def send_element_selected(self, element):
         self.dcdc_selected.emit(element)
@@ -76,7 +78,13 @@ class TabComponent(QScrollArea):
         self.dict_idx_filter_name = {}
 
         button_filter = QPushButton()
+        button_filter.setFixedSize(100, 30)
         button_filter.clicked.connect(self.view_filters)
+        img_filter = QtGui.QPixmap("img/filter.png")
+        icon_filter = QtGui.QIcon(img_filter)
+        button_filter.setIcon(icon_filter)
+        button_filter.setIconSize(img_filter.rect().size())
+
         self.select_filter = QComboBox()
         self.select_filter.currentIndexChanged.connect(self.value_filter_change)
         layout_filter = QHBoxLayout()
@@ -180,6 +188,7 @@ class TabComponent(QScrollArea):
             if value == current_filter:
                 current_widget = self.dict_value_layout[value]
                 self.tab_component_widget.setCurrentWidget(current_widget)
+        self.tab_component_widget.adjustSize()
 
     def value_filter_change(self, index):
         current_filter = str(self.select_filter.currentText())
@@ -187,5 +196,6 @@ class TabComponent(QScrollArea):
             if value == current_filter:
                 current_widget = self.dict_value_layout[value]
                 self.tab_component_widget.setCurrentWidget(current_widget)
+        self.tab_component_widget.adjustSize()
 
 
