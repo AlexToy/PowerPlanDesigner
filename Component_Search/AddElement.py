@@ -9,6 +9,7 @@ from Component_Search.SelectSwitchWidget import SelectSwitchWidget
 from Component_Search.AddComponentConsumer import AddComponentConsumer
 import img
 
+
 class AddElement(QTabWidget):
     # This class loads the database, asks the user which element they want to add to their page (graphical widget) and
     # sends the page a copy of the chosen element

@@ -52,11 +52,9 @@ class PsuWidget(QWidget):
 
         # Line 1
         psu_label = QLabel("PSU ")
-        voltage_input_label = QLabel(str(self.voltage_input) + " V")
-        current_max_label = QLabel(str(self.current_max) + " A")
+        voltage_input_current_max_label = QLabel(str(self.voltage_input) + " V / " + (str(self.current_max) + " A"))
         layout.addWidget(psu_label, 0, 0)
-        layout.addWidget(voltage_input_label, 0, 1)
-        layout.addWidget(current_max_label, 0, 2)
+        layout.addWidget(voltage_input_current_max_label, 0, 1)
 
         # Line 2
         supplier_label = QLabel(self.supplier)
@@ -76,23 +74,27 @@ class PsuWidget(QWidget):
 
         # Line 5
         line_label = QLabel("----------------------------------")
-        layout.addWidget(line_label, 4, 0)
+        layout.addWidget(line_label, 4, 0, 1, 2)
 
         # Line 6
         output_label = QLabel("Output")
+        output_label.setStyleSheet("font: bold")
         layout.addWidget(output_label, 5, 0)
 
         # Line 7
         self.voltage_output_label.setText(str(self.voltage_output) + " V")
         layout.addWidget(self.voltage_output_label, 6, 0)
+        self.voltage_output_label.setObjectName("Voltage")
 
         # Line 8
         self.current_output_label.setText(str(self.current_output) + " mA")
         layout.addWidget(self.current_output_label, 7, 0)
+        self.current_output_label.setObjectName("Current")
 
         # Line 9
         self.power_output_label.setText(str(self.power_output) + " mW")
         layout.addWidget(self.power_output_label, 8, 0)
+        self.power_output_label.setObjectName("Power")
 
         # Widget Settings
         grp_box.setTitle(str(self.name))

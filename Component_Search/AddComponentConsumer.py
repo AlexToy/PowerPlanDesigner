@@ -4,7 +4,6 @@ from Components.ConsumerWidget import ConsumerWidget
 
 
 class AddComponentConsumer(QTabWidget):
-
     add_consumer = QtCore.pyqtSignal(object)
 
     def __init__(self, list_consumer, parent=None):
@@ -49,7 +48,7 @@ class AddComponentConsumer(QTabWidget):
 
                 # Creating the group box for the equiv code and adding the group box to the good layout
                 if consumer.name == "SoC":
-                    self.group_supplier = GroupByEquivCode(consumer.supplier, consumer.ref_component,
+                    self.group_supplier = GroupByEquivCode(consumer.supplier + " - " + consumer.ref_component, "None",
                                                            consumer.equivalence_code)
                     self.tab_soc_layout.addWidget(self.group_supplier)
                 elif consumer.name == "eMMC":
@@ -113,11 +112,12 @@ class GroupByEquivCode(QGroupBox):
     def __init__(self, title: str, core: str, equivalent_code, parent=None):
         super(GroupByEquivCode, self).__init__(parent)
         self.layout = QVBoxLayout()
-        core_label = QLabel()
-        core_label.setText(core)
         equiv_code_label = QLabel()
         equiv_code_label.setText(equivalent_code)
-        self.layout.addWidget(core_label)
+        if core != "None":
+            core_label = QLabel()
+            core_label.setText(core)
+            self.layout.addWidget(core_label)
         self.layout.addWidget(equiv_code_label)
         self.setLayout(self.layout)
         self.setTitle(title)
