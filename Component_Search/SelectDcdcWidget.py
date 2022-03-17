@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QGridLayout, QPushButton, QLineEdit, QLabel, QVBoxLayout
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5 import QtCore, Qt
+from PyQt5 import QtCore
 from Components.DcdcWidget import DcdcWidget
 
 
@@ -31,10 +31,7 @@ class SelectDcdcWidget(QGroupBox):
         self.v_out = QLineEdit()
         self.current_label = QLabel(str(self.dcdc_copy.current_max) + " A")
         self.mode_label = QLabel(self.dcdc_copy.mode)
-        self.voltage_input_label = QLabel("Vin : " + str(self.dcdc_copy.voltage_input_min) + " V - " +
-                                          str(self.dcdc_copy.voltage_input_max) + " V")
-        self.voltage_output_label = QLabel("Vout : " + str(self.dcdc_copy.voltage_output_min) + " V - " +
-                                           str(self.dcdc_copy.voltage_output_max) + " V")
+        self.voltage_input_label = QLabel("Vin : " + self.dcdc_copy.voltage_input_usage)
         self.label_restriction = QDoubleValidator(0, 100, 2)
 
         # layout
@@ -49,7 +46,6 @@ class SelectDcdcWidget(QGroupBox):
         self.layout_1.addWidget(self.current_label)
         self.layout_1.addWidget(self.mode_label)
         self.layout_1.addWidget(self.voltage_input_label)
-        self.layout_1.addWidget(self.voltage_output_label)
 
         self.layout.addLayout(self.layout_1)
         self.layout.addLayout(self.layout_2)

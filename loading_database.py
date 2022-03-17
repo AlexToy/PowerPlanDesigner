@@ -5,6 +5,7 @@ from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
 from Components.SwitchWidget import SwitchWidget
 from Components.ConsumerWidget import ConsumerWidget
+from Components.Pmic import Pmic
 from Formula import Formula
 
 # DCDC DATABASE
@@ -18,6 +19,19 @@ DCDC_VOLTAGE_INPUT_MAX = 7
 DCDC_VOLTAGE_OUTPUT_MIN = 8
 DCDC_VOLTAGE_OUTPUT_MAX = 9
 DCDC_EFFICIENCY = 10
+
+# PMIC DATABASE
+PMIC_REF_COMPONENT = 1
+PMIC_SUPPLIER = 2
+PMIC_EQUIVALENCE_CODE = 3
+PMIC_COMPONENT = 4
+PMIC_CURRENT_MAX = 5
+PMIC_VOLTAGE_INPUT_MIN = 6
+PMIC_VOLTAGE_INPUT_MAX = 7
+PMIC_VOLTAGE_OUTPUT_MIN = 8
+PMIC_VOLTAGE_OUTPUT_MAX = 9
+PMIC_EFFICIENCY = 10
+PMIC_NAME = 11
 
 # DCDC DATABASE
 LDO_REF_COMPONENT = 1
@@ -70,6 +84,8 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
     for sheet in input_file_database:
         if sheet.title == "DCDC":
             sheet_dcdc = sheet
+        elif sheet.title == "PMIC":
+            sheet_pmic = sheet
         elif sheet.title == "PSU":
             sheet_psu = sheet
         elif sheet.title == "LDO":
@@ -81,7 +97,6 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
 
     # Loading DCDC DATABASE
     dcdc_list = []
-    dcdc_formula_list = []
     line = 1
     for _ in sheet_dcdc:
         line = line + 1
@@ -95,11 +110,10 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             voltage_input_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_INPUT_MAX).value)
             voltage_output_min = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MIN).value)
             voltage_output_max = float(sheet_dcdc.cell(line, DCDC_VOLTAGE_OUTPUT_MAX).value)
-            if str(sheet_dcdc.cell(line, DCDC_EFFICIENCY).value) != "None":
-                dcdc_formula_list.append(Formula(str(sheet_dcdc.cell(line, DCDC_EFFICIENCY).value)))
+            dcdc_formula = Formula(str(sheet_dcdc.cell(line, DCDC_EFFICIENCY).value))
 
             dcdc_list.append(DcdcWidget(ref_component, supplier, current_max, mode, equivalence_code, voltage_input_min,
-                                        voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula_list))
+                                        voltage_input_max, voltage_output_min, voltage_output_max, dcdc_formula))
 
     # Loading PSU DATABASE
     psu_list = []
@@ -155,6 +169,48 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
             switch_list.append(SwitchWidget(type, current_max, rds_on, ref_component, supplier, equivalence_code,
                                             voltage_input_min, voltage_input_max, voltage_bias_min, voltage_bias_max))
 
+    # Loading PMIC
+    pmic_list = []
+    dict_pmic = {}
+    line = 1
+    for _ in sheet_pmic:
+        line = line + 1
+        if str(sheet_pmic.cell(line, 1).value) != "None":
+            ref_component = str(sheet_pmic.cell(line, PMIC_REF_COMPONENT).value)
+            supplier = str(sheet_pmic.cell(line, PMIC_SUPPLIER).value)
+            equivalence_code = str(sheet_pmic.cell(line, PMIC_EQUIVALENCE_CODE).value)
+            component = str(sheet_pmic.cell(line, PMIC_COMPONENT).value)
+            current_max = float(sheet_pmic.cell(line, PMIC_CURRENT_MAX).value)
+            voltage_input_min = float(sheet_pmic.cell(line, PMIC_VOLTAGE_INPUT_MIN).value)
+            voltage_input_max = float(sheet_pmic.cell(line, PMIC_VOLTAGE_INPUT_MAX).value)
+            voltage_output_min = float(sheet_pmic.cell(line, PMIC_VOLTAGE_OUTPUT_MIN).value)
+            voltage_output_max = float(sheet_pmic.cell(line, PMIC_VOLTAGE_OUTPUT_MAX).value)
+            efficiency = float(sheet_pmic.cell(line, PMIC_EFFICIENCY).value)
+            name = str(sheet_pmic.cell(line, PMIC_NAME).value)
+
+        if equivalence_code not in dict_pmic:
+            new_pmic = Pmic(ref_component, supplier, equivalence_code)
+            dict_pmic.update({equivalence_code: new_pmic})
+            pmic_list.append(new_pmic)
+
+        if component == "DCDC":
+            dcdc_pmic = DcdcWidget(ref_component, supplier, current_max, "Pulse Frequency Mod.", equivalence_code,
+                                   voltage_input_min, voltage_input_max, voltage_output_min, voltage_output_max,
+                                   Formula("None"))
+            dcdc_pmic.efficiency_is_set = True
+            dcdc_pmic.efficiency = efficiency
+            dcdc_pmic.name = name
+            dcdc_pmic.voltage_output = voltage_output_max
+            dcdc_pmic.voltage_input = voltage_input_max
+            dict_pmic[equivalence_code].add_dcdc(dcdc_pmic)
+        elif component == "LDO":
+            ldo_pmic = LdoWidget(ref_component, supplier, current_max, equivalence_code, voltage_input_min,
+                                 voltage_input_max, voltage_output_max)
+            ldo_pmic.name = name
+            dict_pmic[equivalence_code].add_ldo(ldo_pmic)
+        else:
+            print("[DEBUG] Loading PMIC database : unknown component")
+
     # Loading CONSUMER DATABASE
     input_file_consumer_database = openpyxl.load_workbook(FILE_CONSUMER_DATA_BASE, read_only=True)
     consumer_list = []
@@ -180,4 +236,4 @@ def loading_database() -> List[DcdcWidget] and List[PsuWidget] and List[Consumer
                                                     current_min_measure, current_max_measure, current_peak_measure))
 
     print("Database loaded !")
-    return dcdc_list, psu_list, ldo_list, consumer_list, switch_list
+    return dcdc_list, psu_list, ldo_list, consumer_list, switch_list, pmic_list
