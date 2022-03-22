@@ -15,7 +15,6 @@ class MainWindow(QMainWindow):
 
         # Add new page
         self.new_power_plan = PagePowerPlan()
-        self.new_power_plan.element_received.connect(self.close_add_element)
         self.add_new_parent_child_connection.connect(self.new_power_plan.set_add_child_parent_connection)
         self.element_is_deleted.connect(self.new_power_plan.set_delete_element)
 
@@ -52,10 +51,6 @@ class MainWindow(QMainWindow):
 
     def open_add_element(self):
         self.add_element.show()
-
-    def close_add_element(self, element_received: bool):
-        if element_received:
-            self.add_element.close()
 
     def new_parent_child_connexion(self):
         self.add_new_parent_child_connection.emit(True)

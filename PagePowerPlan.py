@@ -11,8 +11,6 @@ from Arrow import Arrow
 
 
 class PagePowerPlan(QGraphicsView):
-    # Signal
-    element_received = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(PagePowerPlan, self).__init__(parent)
@@ -106,9 +104,6 @@ class PagePowerPlan(QGraphicsView):
 
         # Add the new element on the page
         self.scene.addItem(new_element_widget.ui_init())
-
-        # If element is received emit a signal to the main window to close the window
-        self.element_received.emit(True)
 
     def set_delete_element(self, state: bool):
         # This function is used to start or finish  deleting a widget
