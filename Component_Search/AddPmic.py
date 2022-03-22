@@ -32,6 +32,7 @@ class SelectedPmic(QGroupBox):
         super(SelectedPmic, self).__init__(parent)
 
         self.pmic = pmic
+        self.setObjectName("addElement_GrpBox")
         layout = QVBoxLayout()
         add_button = QPushButton("Add all")
         add_button.clicked.connect(self.clicked_button_function)

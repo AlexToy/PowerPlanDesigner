@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
 from PyQt5 import QtCore
+from PyQt5.QtCore import QPointF, Qt
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
 from Components.SwitchWidget import SwitchWidget
 from Components.ConsumerWidget import ConsumerWidget
+from GraphicsScene import GraphicsScene
 from Arrow import Arrow
 
 
@@ -16,8 +18,8 @@ class PagePowerPlan(QGraphicsView):
         super(PagePowerPlan, self).__init__(parent)
 
         # Widget for pagePowerPlan
-        self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 1000, 1000);
+        self.scene = GraphicsScene()
+        self.scene.setSceneRect(0, 0, 500, 500)
 
         self.setScene(self.scene)
 
@@ -30,6 +32,15 @@ class PagePowerPlan(QGraphicsView):
         self.index_widget = 0
         self.add_child_parent_connection = False
         self.delete_element = False
+
+    def wheelEvent(self, event):
+        zoom = event.angleDelta().y()
+        print(zoom)
+        if zoom > 0:
+            factor = 1.2
+        else:
+            factor = 0.8
+        self.scale(factor, factor)
 
     def add_new_element(self, element):
         # Find which is the element
@@ -155,9 +166,9 @@ class PagePowerPlan(QGraphicsView):
                 if parent.add_child(child) and child.add_parent(parent):
                     ### -------- ARROWS --------- ###
                     # Create and add Arrow on the scene
-                    new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
+                    new_arrow = Arrow(parent.proxy_widget.widget_pos_x, parent.proxy_widget.widget_pos_y,
                                       parent.proxy_widget.width, parent.proxy_widget.height,
-                                      child.proxy_widget.updated_cursor_x, child.proxy_widget.updated_cursor_y,
+                                      child.proxy_widget.widget_pos_x, child.proxy_widget.widget_pos_y,
                                       child.proxy_widget.height)
                     self.scene.addItem(new_arrow)
                     # Add arrows on the arrows list
