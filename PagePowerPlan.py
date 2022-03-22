@@ -33,7 +33,6 @@ class PagePowerPlan(QGraphicsView):
 
     def wheelEvent(self, event):
         zoom = event.angleDelta().y()
-        print(zoom)
         if zoom > 0:
             factor = 1.2
         else:
@@ -165,6 +164,9 @@ class PagePowerPlan(QGraphicsView):
                                       parent.proxy_widget.width, parent.proxy_widget.height,
                                       child.proxy_widget.widget_pos_x, child.proxy_widget.widget_pos_y,
                                       child.proxy_widget.height)
+                    parent.proxy_widget.widget_resizing.connect(new_arrow.update_parent_size)
+                    child.proxy_widget.widget_resizing.connect(new_arrow.update_child_size)
+                    # Add arrow on the scene
                     self.scene.addItem(new_arrow)
                     # Add arrows on the arrows list
                     self.list_arrows.append(new_arrow)

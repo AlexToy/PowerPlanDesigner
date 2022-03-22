@@ -44,12 +44,12 @@ class ConsumerWidget(QWidget):
 
         # creation of widget & layout
         layout = QGridLayout()
+        layout.setSpacing(5)
         ref_component_label = QLabel(self.ref_component)
-        info_label = QLabel(self.info)
         equivalence_code_label = QLabel(self.equivalence_code)
         line_label = QLabel("------------")
         input_label = QLabel("Input")
-        input_label.setStyleSheet("font: bold")
+        input_label.setObjectName("Bold_Word")
         voltage_input_label = QLabel(str(self.voltage_input) + " V")
         voltage_input_label.setObjectName("Voltage")
         current_input_label = QLabel(str(self.current_input) + " mA")
@@ -59,18 +59,17 @@ class ConsumerWidget(QWidget):
 
         # Layout
         layout.addWidget(ref_component_label, 0, 0)
-        layout.addWidget(info_label, 1, 0)
-        layout.addWidget(equivalence_code_label, 2, 0)
-        layout.addWidget(line_label, 3, 0)
-        layout.addWidget(input_label, 4, 0)
-        layout.addWidget(voltage_input_label, 5, 0)
-        layout.addWidget(current_input_label, 6, 0)
-        layout.addWidget(power_input_label, 7, 0)
+        layout.addWidget(equivalence_code_label, 1, 0)
+        layout.addWidget(line_label, 2, 0)
+        layout.addWidget(input_label, 3, 0)
+        layout.addWidget(voltage_input_label, 4, 0)
+        layout.addWidget(current_input_label, 5, 0)
+        layout.addWidget(power_input_label, 6, 0)
 
         # Widget settings
-        grp_box.setTitle(str(self.name))
+        grp_box.setTitle(str(self.name) + " - " + str(self.info))
         grp_box.setLayout(layout)
-        # self.grp_box.setFixedSize(150, 200)
+        grp_box.setMinimumWidth(150)
 
         self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.proxy_widget.setWidget(grp_box)

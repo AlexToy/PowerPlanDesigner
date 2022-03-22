@@ -64,7 +64,7 @@ class LdoWidget(QWidget):
 
         # Line 1
         component_label = QLabel("LDO ")
-        component_label.setStyleSheet("font: bold")
+        component_label.setObjectName("Bold_Word")
         current_max_label = QLabel(str(self.current_max * 1000) + " mA")
         h_layout_1.addWidget(component_label)
         h_layout_1.addWidget(current_max_label)
@@ -84,7 +84,7 @@ class LdoWidget(QWidget):
         # Grid Layout
         # Input
         input_label = QLabel("Input")
-        input_label.setStyleSheet("font: bold")
+        input_label.setObjectName("Bold_Word")
         self.voltage_in_label.setText(str(self.voltage_input) + " V")
         self.voltage_in_label.setObjectName("Voltage")
         self.current_in_label.setText(str(self.current_input) + " mA")
@@ -102,7 +102,7 @@ class LdoWidget(QWidget):
 
         # Output
         output_label = QLabel("Output")
-        output_label.setStyleSheet("font: bold")
+        output_label.setObjectName("Bold_Word")
         self.voltage_out_label.setText(str(self.voltage_output) + " V")
         self.voltage_out_label.setObjectName("Voltage")
         self.current_out_label.setText(str(self.current_output) + " mA")
