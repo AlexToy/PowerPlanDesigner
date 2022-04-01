@@ -15,12 +15,12 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
         self.widget_pos_y = 0
         self.height = 0
         self.width = 0
+        self.setSelected(True)
 
     def item_clicked_from_scene(self):
         self.widget_clicked.emit()
 
     def item_moved_from_scene(self, pos_x, pos_y):
-        print("yo")
         self.widget_pos_x = pos_x
         self.widget_pos_y = pos_y
         self.new_widget_position.emit(pos_x, pos_y)
