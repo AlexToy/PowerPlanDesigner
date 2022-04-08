@@ -52,6 +52,7 @@ class PsuWidget(QWidget):
 
         # Line 1
         psu_label = QLabel("PSU ")
+        psu_label.setObjectName("Bold_Word")
         voltage_input_current_max_label = QLabel(str(self.voltage_input) + " V / " + (str(self.current_max) + " A"))
         layout.addWidget(psu_label, 0, 0)
         layout.addWidget(voltage_input_current_max_label, 0, 1)
@@ -78,7 +79,7 @@ class PsuWidget(QWidget):
 
         # Line 6
         output_label = QLabel("Output")
-        output_label.setStyleSheet("font: bold")
+        output_label.setObjectName("Bold_Word")
         layout.addWidget(output_label, 5, 0)
 
         # Line 7

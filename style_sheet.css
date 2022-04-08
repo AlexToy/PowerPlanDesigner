@@ -1,9 +1,9 @@
 QGroupBox#DCDC_GrpBox {
     background: rgb(221, 235, 247);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 18px;
     padding-top: 25px;
-    border: 10px;
+    border: 1px;
 }
 
 QGroupBox#DCDC_GrpBox:title {
@@ -16,7 +16,7 @@ QGroupBox#DCDC_GrpBox:title {
 QGroupBox#PSU_GrpBox {
     background: rgb(230, 201, 239);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 18px;
     padding-top: 25px;
     border: 10px;
 }
@@ -31,7 +31,7 @@ QGroupBox#PSU_GrpBox:title {
 QGroupBox#LDO_GrpBox {
     background: rgb(237, 243, 214);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 18px;
     padding-top: 25px;
     border: 10px;
 }
@@ -46,7 +46,7 @@ QGroupBox#LDO_GrpBox:title {
 QGroupBox#SWITCH_GrpBox {
     background: rgb(247, 218, 208);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 18px;
     padding-top: 25px;
     border: 10px;
 }
@@ -61,7 +61,7 @@ QGroupBox#SWITCH_GrpBox:title {
 QGroupBox#CONSUMER_GrpBox {
     background: rgb(250, 233, 207);
     font-weight: bold;
-    font-size: 13px;
+    font-size: 18px;
     padding-top: 25px;
     border: 10px;
 }
@@ -75,14 +75,21 @@ QGroupBox#CONSUMER_GrpBox:title {
 
 QLabel#Voltage {
     color: green;
+    font: bold 14px;
 }
 
 QLabel#Current {
     color: red;
+    font-weight: bold 12px;
 }
 
 QLabel#Power {
     color: blue;
+    font-weight: bold 12px;
+}
+
+QLabel#Bold_Word {
+    font: bold 12px;
 }
 
 QGroupBox#addElement_GrpBox {

@@ -6,6 +6,7 @@ from Component_Search.SelectDcdcWidget import SelectDcdcWidget
 from Component_Search.SelectPsuWidget import SelectPsuWidget
 from Component_Search.SelectLdoWidget import SelectLdoWidget
 from Component_Search.SelectSwitchWidget import SelectSwitchWidget
+from Component_Search.AddPmic import AddPmic
 from Component_Search.AddComponentConsumer import AddComponentConsumer
 import img
 
@@ -21,7 +22,8 @@ class AddElement(QTabWidget):
         super(AddElement, self).__init__(parent)
 
         # 1 Import the database
-        list_dcdc_database, list_psu_database, list_ldo_database, list_consumer_database, list_switch_database = loading_database()
+        list_dcdc_database, list_psu_database, list_ldo_database, list_consumer_database, list_switch_database, \
+        list_pmic_database = loading_database()
 
         tab_dcdc = TabComponent(list_dcdc_database)
         tab_dcdc.component_selected.connect(self.send_element_selected)
@@ -32,11 +34,16 @@ class AddElement(QTabWidget):
         tab_ldo = TabComponent(list_ldo_database)
         tab_ldo.component_selected.connect(self.send_element_selected)
 
+        # PMIC
+        tab_pmic = AddPmic(list_pmic_database)
+        tab_pmic.component_selected.connect(self.send_element_selected)
+
         # CONSUMER
         tab_consumer = AddComponentConsumer(list_consumer_database)
         tab_consumer.add_consumer.connect(self.send_element_selected)
 
         self.addTab(tab_dcdc, "DC/DC")
+        self.addTab(tab_pmic, "PMIC")
         self.addTab(tab_psu, "PSU")
         self.addTab(tab_ldo, "LDO")
         self.addTab(tab_switch, "SWITCH")
@@ -198,5 +205,3 @@ class TabComponent(QScrollArea):
                 current_widget = self.dict_value_layout[value]
                 self.tab_component_widget.setCurrentWidget(current_widget)
         self.tab_component_widget.adjustSize()
-
-

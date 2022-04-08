@@ -1,9 +1,19 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget, QGraphicsRectItem, \
+    QGraphicsItem
 from PyQt5 import QtCore
 from Components.GraphicsProxyWidget import GraphicsProxyWidget
 
 INITIAL_POS_X = 50
 INITIAL_POS_Y = 50
+
+
+def get_voltage_input_usage(voltage_input_max):
+    if voltage_input_max > 20:
+        return str("20 V")
+    elif voltage_input_max < 12:
+        return str("<= 5 V")
+    else:
+        return str("12 V")
 
 
 class DcdcWidget(QWidget):
@@ -12,7 +22,7 @@ class DcdcWidget(QWidget):
 
     def __init__(self, ref_component: str, supplier: str, current_max: float, mode: str, equivalence_code: str,
                  voltage_input_min: float, voltage_input_max: float, voltage_output_min: float,
-                 voltage_output_max: float, formula_list, parent=None):
+                 voltage_output_max: float, efficiency_formula, parent=None):
         super(DcdcWidget, self).__init__(parent)
 
         #  Fixed parameters
@@ -25,9 +35,12 @@ class DcdcWidget(QWidget):
         self.voltage_input_max = voltage_input_max
         self.voltage_output_min = voltage_output_min
         self.voltage_output_max = voltage_output_max
-        self.formula_list = formula_list
+        self.voltage_input_usage = get_voltage_input_usage(self.voltage_input_max)
+        self.efficiency_formula = efficiency_formula
+        self.efficiency_is_set = False
         self.component = "DCDC"
-        self.dict_filters = {"Current max": self.current_max, "Mode":self.mode}
+        self.dict_filters = {"Output Current": self.current_max, "Mode": self.mode,
+                             "Input voltage": self.voltage_input_usage}
 
         # Dynamic parameters
         self.name = ""
@@ -50,7 +63,10 @@ class DcdcWidget(QWidget):
         self.voltage_out_label = QLabel()
         self.current_out_label = QLabel()
         self.power_out_label = QLabel()
-        self.proxy_widget = GraphicsProxyWidget()
+        self.graphics_item = QGraphicsRectItem(0, 0, 300, 300)
+        self.graphics_item.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.graphics_item.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        self.proxy_widget = GraphicsProxyWidget(self.graphics_item)
 
         self.parent = 0
         self.children = []
@@ -71,6 +87,7 @@ class DcdcWidget(QWidget):
 
         # Line 1
         component_label = QLabel("DCDC ")
+        component_label.setObjectName("Bold_Word")
         current_max_label = QLabel(str(self.current_max) + " A")
         h_layout_1.addWidget(component_label)
         h_layout_1.addWidget(current_max_label)
@@ -90,7 +107,7 @@ class DcdcWidget(QWidget):
         # Grid Layout
         # Input
         input_label = QLabel("Input")
-        input_label.setStyleSheet("font: bold")
+        input_label.setObjectName("Bold_Word")
         self.voltage_in_label.setText(str(self.voltage_input) + " V")
         self.voltage_in_label.setObjectName("Voltage")
         self.current_in_label.setText(str(self.current_input) + " mA")
@@ -110,7 +127,7 @@ class DcdcWidget(QWidget):
 
         # Output
         output_label = QLabel("Output")
-        output_label.setStyleSheet("font: bold")
+        output_label.setObjectName("Bold_Word")
         self.voltage_out_label.setText(str(self.voltage_output) + " V")
         self.voltage_out_label.setObjectName("Voltage")
         self.current_out_label.setText(str(self.current_output) + " mA")
@@ -137,21 +154,32 @@ class DcdcWidget(QWidget):
         self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.proxy_widget.setWidget(grp_box)
 
-        return self.proxy_widget
+        return self.graphics_item
 
     def update_efficiency_value(self):
-        for formula in self.formula_list:
+        if self.efficiency_formula.formula_is_empty:
+            if self.efficiency_is_set:
+                print("1")
+                return
+            else:
+                self.efficiency = 85
+                print("2")
+                return
+
+        else:
             # Look for the same voltage input & voltage output
-            if formula.voltage_input == float(self.voltage_input) and \
-                    formula.voltage_output == float(self.voltage_output):
-                formula_str = formula.get_formula_efficiency(self.current_output)
-                self.efficiency = eval(formula_str.replace("x", str(self.current_output/1000)))
+            if self.efficiency_formula.voltage_input == float(self.voltage_input) and \
+                    self.efficiency_formula.voltage_output == float(self.voltage_output):
+                formula_str = self.efficiency_formula.get_formula_efficiency(self.current_output)
+                self.efficiency = eval(formula_str.replace("x", str(self.current_output / 1000)))
                 print("DEBUG : New efficiency : " + str(self.efficiency))
+                print("3")
                 return
             # TODO : Look for the closest formula if the voltage input/output are not in the list of formula
             else:
                 self.efficiency = 85
                 print("DEBUG : New efficiency : " + str(self.efficiency))
+                print("4")
                 return
 
     def add_parent(self, parent):
@@ -240,7 +268,7 @@ class DcdcWidget(QWidget):
 
     def update_graphics_parameters(self):
         # Input parameters
-        self.voltage_in_label.setText(self.voltage_input + " V")
+        self.voltage_in_label.setText(str(self.voltage_input) + " V")
         self.current_in_label.setText(str(round(self.current_input, 1)) + " mA")
         self.power_in_label.setText(str(round(self.power_input, 1)) + " mW")
 
@@ -248,7 +276,7 @@ class DcdcWidget(QWidget):
         self.efficiency_label.setText(str(round(self.efficiency, 1)) + " %")
 
         # Output parameters
-        self.voltage_out_label.setText(self.voltage_output + " V")
+        self.voltage_out_label.setText(str(self.voltage_output) + " V")
         self.current_out_label.setText(str(round(self.current_output, 1)) + " mA")
         self.power_out_label.setText(str(round(self.power_output, )) + " mW")
 

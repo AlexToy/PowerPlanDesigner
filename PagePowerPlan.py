@@ -1,25 +1,28 @@
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
+from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QGraphicsItem, QGraphicsRectItem
+from PyQt5.QtGui import QRegion, QPainterPath, QPainter, QPen, QBrush, QColor
+from PyQt5.QtCore import QRect, QSize, Qt, QPoint, QPointF
 from PyQt5 import QtCore
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
 from Components.SwitchWidget import SwitchWidget
 from Components.ConsumerWidget import ConsumerWidget
+from GraphicsScene import GraphicsScene
 from Arrow import Arrow
+
+SPEED_MOVE_FACTOR = 0.6
 
 
 class PagePowerPlan(QGraphicsView):
-    # Signal
-    element_received = QtCore.pyqtSignal(bool)
 
-    def __init__(self, parent=None):
-        super(PagePowerPlan, self).__init__(parent)
+    def __init__(self):
+        super(PagePowerPlan, self).__init__()
+
+        self.setRenderHint(QPainter.Antialiasing)
 
         # Widget for pagePowerPlan
-        self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 1000, 1000);
-
-        self.setScene(self.scene)
+        self.scene = GraphicsScene(self)
+        self.scene.setSceneRect(-50000, -50000, 100000, 100000)
 
         # Variables
         self.list_element_widget = []
@@ -31,6 +34,27 @@ class PagePowerPlan(QGraphicsView):
         self.add_child_parent_connection = False
         self.delete_element = False
 
+        # Variables for events
+
+        self.setScene(self.scene)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+
+        item = DcdcWidget("MP16", "MPS", 3, "Froced PWM", "2100000", 4.2, 20, 1, 12, None)
+        item.name = "yoo"
+        item.ui_init().setFlag(QGraphicsItem.ItemIsMovable, True)
+        item.ui_init().setFlag(QGraphicsItem.ItemIsSelectable, True)
+        self.scene.addItem(item.ui_init())
+
+    def keyPressEvent(self, event):
+        QGraphicsView.keyPressEvent(self, event)
+        if event.key() == Qt.Key_Alt:
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
+
+    def keyReleaseEvent(self, event):
+        QGraphicsView.keyReleaseEvent(self, event)
+        if event.key() == Qt.Key_Alt:
+            self.setDragMode(QGraphicsView.RubberBandDrag)
+
     def add_new_element(self, element):
         # Find which is the element
         if element.component == "DCDC":
@@ -39,7 +63,7 @@ class PagePowerPlan(QGraphicsView):
             dcdc = element
             new_dcdc = DcdcWidget(dcdc.ref_component, dcdc.supplier, dcdc.current_max, dcdc.mode, dcdc.equivalence_code,
                                   dcdc.voltage_input_min, dcdc.voltage_input_max, dcdc.voltage_output_min,
-                                  dcdc.voltage_output_max, dcdc.formula_list)
+                                  dcdc.voltage_output_max, dcdc.efficiency_formula)
             new_dcdc.voltage_input = dcdc.voltage_input
             new_dcdc.voltage_output = dcdc.voltage_output
             new_dcdc.name = dcdc.name
@@ -90,14 +114,11 @@ class PagePowerPlan(QGraphicsView):
 
         # Add the new element in the list
         self.list_element_widget.append(new_element_widget)
-
         new_element_widget.widget_selected.connect(self.get_clicked_widget)
 
         # Add the new element on the page
         self.scene.addItem(new_element_widget.ui_init())
-
-        # If element is received emit a signal to the main window to close the window
-        self.element_received.emit(True)
+        new_element_widget.ui_init().setPos(20, 100)
 
     def set_delete_element(self, state: bool):
         # This function is used to start or finish  deleting a widget
@@ -155,10 +176,13 @@ class PagePowerPlan(QGraphicsView):
                 if parent.add_child(child) and child.add_parent(parent):
                     ### -------- ARROWS --------- ###
                     # Create and add Arrow on the scene
-                    new_arrow = Arrow(parent.proxy_widget.updated_cursor_x, parent.proxy_widget.updated_cursor_y,
+                    new_arrow = Arrow(parent.proxy_widget.widget_pos_x, parent.proxy_widget.widget_pos_y,
                                       parent.proxy_widget.width, parent.proxy_widget.height,
-                                      child.proxy_widget.updated_cursor_x, child.proxy_widget.updated_cursor_y,
+                                      child.proxy_widget.widget_pos_x, child.proxy_widget.widget_pos_y,
                                       child.proxy_widget.height)
+                    parent.proxy_widget.widget_resizing.connect(new_arrow.update_parent_size)
+                    child.proxy_widget.widget_resizing.connect(new_arrow.update_child_size)
+                    # Add arrow on the scene
                     self.scene.addItem(new_arrow)
                     # Add arrows on the arrows list
                     self.list_arrows.append(new_arrow)
