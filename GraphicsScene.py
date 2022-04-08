@@ -15,7 +15,6 @@ class GraphicsScene(QGraphicsScene):
         self.item = None
 
     def mousePressEvent(self, event):
-        # get the widget if we click on a item
         self.item = self.itemAt(event.scenePos(), QTransform())
 
         if event.button() == Qt.LeftButton:
@@ -30,11 +29,11 @@ class GraphicsScene(QGraphicsScene):
             # Right click --> Move the view on the scene
             self.move_scene_locked = False
             self.move_item_locked = True
+            self.orig_cursor_position = event.lastScenePos()
+            self.orig_scene_position = self.sceneRect()
             QApplication.setOverrideCursor(Qt.OpenHandCursor)
 
     def mouseMoveEvent(self, event):
-        orig_cursor_position = event.lastScenePos()
-        updated_cursor_position = event.scenePos()
 
         # Move an item on the scene
         if self.item is not None and not self.move_item_locked:
@@ -47,9 +46,12 @@ class GraphicsScene(QGraphicsScene):
         # Move the view of the scene
         if not self.move_scene_locked:
             QApplication.changeOverrideCursor(Qt.ClosedHandCursor)
-            orig_scene_position = self.sceneRect()
-            updated_cursor_x = (orig_cursor_position.x() - updated_cursor_position.x())* SPEED_MOVE_FACTOR + orig_scene_position.x()
-            updated_cursor_y = (orig_cursor_position.y() - updated_cursor_position.y())* SPEED_MOVE_FACTOR + orig_scene_position.y()
+            updated_cursor_position = event.scenePos()
+            print(updated_cursor_position)
+            dx = (updated_cursor_position.x() - self.orig_cursor_position.x()) * SPEED_MOVE_FACTOR
+            dy = (updated_cursor_position.y() - self.orig_cursor_position.y()) * SPEED_MOVE_FACTOR
+            updated_cursor_x = self.orig_scene_position.x() + dx
+            updated_cursor_y = self.orig_scene_position.y() + dy
             self.setSceneRect(updated_cursor_x, updated_cursor_y, 500, 500)
 
     def mouseReleaseEvent(self, event):
