@@ -2,6 +2,14 @@ import sys
 from MainWindow import MainWindow
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QFile
+from Test import View
+
+
+def test():
+    app = QApplication(sys.argv)
+    d = View()
+    d.show()
+    app.exec()
 
 
 def main():
