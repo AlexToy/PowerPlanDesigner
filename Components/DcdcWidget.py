@@ -1,5 +1,4 @@
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget, QGraphicsRectItem, \
-    QGraphicsItem
+from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QWidget
 from PyQt5 import QtCore
 from Components.GraphicsProxyWidget import GraphicsProxyWidget
 
@@ -63,10 +62,6 @@ class DcdcWidget(QWidget):
         self.voltage_out_label = QLabel()
         self.current_out_label = QLabel()
         self.power_out_label = QLabel()
-        self.graphics_item = QGraphicsRectItem(0, 0, 300, 300)
-        self.graphics_item.setFlag(QGraphicsItem.ItemIsMovable, True)
-        self.graphics_item.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        self.proxy_widget = GraphicsProxyWidget(self.graphics_item)
 
         self.parent = 0
         self.children = []
@@ -74,6 +69,7 @@ class DcdcWidget(QWidget):
         self.arrows = {}
 
         self.move_grpbox = False
+        self.proxy_widget = GraphicsProxyWidget()
 
     def ui_init(self):
         self.proxy_widget.widget_clicked.connect(self.send_widget)
@@ -154,7 +150,7 @@ class DcdcWidget(QWidget):
         self.proxy_widget.setPos(INITIAL_POS_X, INITIAL_POS_Y)
         self.proxy_widget.setWidget(grp_box)
 
-        return self.graphics_item
+        return self.proxy_widget
 
     def update_efficiency_value(self):
         if self.efficiency_formula.formula_is_empty:

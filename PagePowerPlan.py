@@ -100,7 +100,6 @@ class PagePowerPlan(QGraphicsView):
             self.list_selected_items.clear()
             self.set_multiple_selection = False
             self.multiple_selection_move = False
-            print("x select False")
 
     def wheelEvent(self, event):
         zoom = event.angleDelta().y()
