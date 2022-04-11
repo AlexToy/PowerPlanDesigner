@@ -17,7 +17,7 @@ class PagePowerPlan(QGraphicsView):
 
         # Widget for pagePowerPlan
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(-5000, -5000, 5000, 5000)
+        self.scene.setSceneRect(-2000, -2000, 2000, 2000)
 
         self.setScene(self.scene)
 
@@ -36,25 +36,25 @@ class PagePowerPlan(QGraphicsView):
         self.item = None
         self.move_item_locked = True
         self.delta_mouse_item_pos = None
-        self.setRubberBandSelectionMode(Qt.IntersectsItemBoundingRect)
         self.list_selected_items = []
         self.set_multiple_selection = False
         self.multiple_selection_move = False
         self.rubberBandChanged.connect(self.get_selected_items)
         self.dict_item_init_pos = {}
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def mousePressEvent(self, event):
         self.init_mouse_pos = event.pos()
         # Select an item
         self.item = self.itemAt(event.pos())
-        self.setDragMode(QGraphicsView.RubberBandDrag)
 
         # Move an item on the scene
         if event.button() == Qt.LeftButton:
+            QGraphicsView.mousePressEvent(self, event)
+            self.setDragMode(QGraphicsView.RubberBandDrag)
 
             # Selection of one item
             if self.set_multiple_selection:
+                self.setDragMode(QGraphicsView.NoDrag)
                 print("Move all items")
                 self.multiple_selection_move = True
 
@@ -62,7 +62,6 @@ class PagePowerPlan(QGraphicsView):
                 for item in self.list_selected_items:
                     item.item_clicked_from_scene()
                     self.dict_item_init_pos.update({item: item.scenePos() - self.mapToScene(self.init_mouse_pos)})
-                self.setDragMode(QGraphicsView.NoDrag)
                 QGraphicsView.mousePressEvent(self, event)
 
             # Selection of several items
@@ -79,11 +78,8 @@ class PagePowerPlan(QGraphicsView):
                 self.setDragMode(QGraphicsView.RubberBandDrag)
                 QGraphicsView.mousePressEvent(self, event)
 
-        if event.button() == Qt.RightButton:
-            self.setDragMode(QGraphicsView.ScrollHandDrag)
-            QGraphicsView.mousePressEvent(self, event)
-
     def mouseMoveEvent(self, event):
+        QGraphicsView.mouseMoveEvent(self, event)
         new_pos_map = self.mapToScene(event.pos())
 
         # Move several items on the scene
@@ -109,6 +105,7 @@ class PagePowerPlan(QGraphicsView):
 
     def mouseReleaseEvent(self, event):
         QGraphicsView.mouseReleaseEvent(self, event)
+        print(self.dragMode())
         self.item = None
         self.setDragMode(QGraphicsView.NoDrag)
         self.move_item_locked = True
@@ -118,6 +115,7 @@ class PagePowerPlan(QGraphicsView):
             self.multiple_selection_move = False
 
     def wheelEvent(self, event):
+        QGraphicsView.wheelEvent(self, event)
         zoom = event.angleDelta().y()
         if zoom > 0:
             factor = 1.2
@@ -125,15 +123,15 @@ class PagePowerPlan(QGraphicsView):
             factor = 0.8
         self.scale(factor, factor)
 
-    """def keyPressEvent(self, event):
-        QGraphicsView.keyPressEvent(self, event)
+    def keyPressEvent(self, event):
         if event.key() == Qt.Key_Alt:
             self.setDragMode(QGraphicsView.ScrollHandDrag)
+            QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
-        QGraphicsView.keyReleaseEvent(self, event)
         if event.key() == Qt.Key_Alt:
-            self.setDragMode(QGraphicsView.RubberBandDrag)"""
+            self.setDragMode(QGraphicsView.RubberBandDrag)
+            QGraphicsView.keyReleaseEvent(self, event)
 
     def get_selected_items(self, rubber_band_rect):
         # Add all the items that are in the rubber band
