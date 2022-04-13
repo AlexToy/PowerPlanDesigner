@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
-from PyQt5 import QtCore
+from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import QPointF, Qt, QPoint, QRectF
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
@@ -18,6 +18,7 @@ class PagePowerPlan(QGraphicsView):
         # Widget for pagePowerPlan
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(QRectF(0, 0, 20000, 20000))
+        self.setRenderHints(QPainter.Antialiasing)
         self.setScene(self.scene)
 
         self.centerOn(0, 0)
