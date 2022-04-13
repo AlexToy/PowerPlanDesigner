@@ -14,6 +14,8 @@ class Arrow(QGraphicsLineItem):
         self.arrow_y_child = y_child + (height_child / 2)
         self.height_child = height_child
 
+        self.setZValue(1)
+
         self.update_arrow_position()
 
     def update_parent_position(self, x_parent, y_parent):
