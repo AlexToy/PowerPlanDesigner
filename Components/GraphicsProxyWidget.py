@@ -24,7 +24,7 @@ class GraphicsProxyWidget(QGraphicsProxyWidget):
         self.widget_pos_y = pos_y
         self.new_widget_position.emit(pos_x, pos_y)
 
-    """def resizeEvent(self, event):
+    def resizeEvent(self, event):
         self.height = event.newSize().height()
         self.width = event.newSize().width()
-        self.widget_resizing.emit(self.height, self.width, self.widget_pos_x, self.widget_pos_y)"""
+        self.widget_resizing.emit(self.height, self.width, self.widget_pos_x, self.widget_pos_y)

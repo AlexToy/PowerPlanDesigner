@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
 from PyQt5 import QtCore
-from PyQt5.QtCore import QPointF, Qt, QPoint
+from PyQt5.QtCore import QPointF, Qt, QPoint, QRectF
 from Components.DcdcWidget import DcdcWidget
 from Components.PsuWidget import PsuWidget
 from Components.LdoWidget import LdoWidget
@@ -17,9 +17,10 @@ class PagePowerPlan(QGraphicsView):
 
         # Widget for pagePowerPlan
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(-2000, -2000, 2000, 2000)
-
+        self.scene.setSceneRect(QRectF(0, 0, 20000, 20000))
         self.setScene(self.scene)
+
+        self.centerOn(0, 0)
 
         # Variables
         self.list_element_widget = []
@@ -35,6 +36,7 @@ class PagePowerPlan(QGraphicsView):
         self.init_mouse_pos = QPoint()
         self.item = None
         self.move_item_locked = True
+        self.move_scene_locked = True
         self.delta_mouse_item_pos = None
         self.list_selected_items = []
         self.set_multiple_selection = False
@@ -47,12 +49,15 @@ class PagePowerPlan(QGraphicsView):
         # Select an item
         self.item = self.itemAt(event.pos())
 
+        # WIP
+        print("scroll bar : ", self.horizontalScrollBar().value() + (self.width()/2))
+
         # Move an item on the scene
         if event.button() == Qt.LeftButton:
             QGraphicsView.mousePressEvent(self, event)
             self.setDragMode(QGraphicsView.RubberBandDrag)
 
-            # Selection of one item
+            # Selection of several items
             if self.set_multiple_selection:
                 self.setDragMode(QGraphicsView.NoDrag)
                 print("Move all items")
@@ -64,12 +69,17 @@ class PagePowerPlan(QGraphicsView):
                     self.dict_item_init_pos.update({item: item.scenePos() - self.mapToScene(self.init_mouse_pos)})
                 QGraphicsView.mousePressEvent(self, event)
 
-            # Selection of several items
+            # Selection of one item
             elif self.item is not None:
+                print("item : ", self.item.pos().x())
                 self.move_item_locked = False
                 self.item.item_clicked_from_scene()
                 self.delta_mouse_item_pos = self.item.scenePos() - self.mapToScene(self.init_mouse_pos)
                 self.setDragMode(QGraphicsView.NoDrag)
+                QGraphicsView.mousePressEvent(self, event)
+
+            elif not self.move_scene_locked:
+                self.setDragMode(QGraphicsView.ScrollHandDrag)
                 QGraphicsView.mousePressEvent(self, event)
 
             # Selection of no item
@@ -125,12 +135,12 @@ class PagePowerPlan(QGraphicsView):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Alt:
-            self.setDragMode(QGraphicsView.ScrollHandDrag)
+            self.move_scene_locked = False
             QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Alt:
-            self.setDragMode(QGraphicsView.RubberBandDrag)
+            self.move_scene_locked = True
             QGraphicsView.keyReleaseEvent(self, event)
 
     def get_selected_items(self, rubber_band_rect):
@@ -207,6 +217,8 @@ class PagePowerPlan(QGraphicsView):
 
         # Add the new element on the page
         self.scene.addItem(new_element_widget.ui_init())
+        new_element_widget.proxy_widget.setPos(self.horizontalScrollBar().value() + (self.width() / 2),
+                                               self.verticalScrollBar().value() + (self.height() / 2))
 
     def set_delete_element(self, state: bool):
         # This function is used to start or finish  deleting a widget

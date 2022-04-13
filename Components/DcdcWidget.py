@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QGridLayout, QL
 from PyQt5 import QtCore
 from Components.GraphicsProxyWidget import GraphicsProxyWidget
 
-INITIAL_POS_X = 50
-INITIAL_POS_Y = 50
+INITIAL_POS_X = 200
+INITIAL_POS_Y = 200
 
 
 def get_voltage_input_usage(voltage_input_max):
@@ -155,11 +155,9 @@ class DcdcWidget(QWidget):
     def update_efficiency_value(self):
         if self.efficiency_formula.formula_is_empty:
             if self.efficiency_is_set:
-                print("1")
                 return
             else:
                 self.efficiency = 85
-                print("2")
                 return
 
         else:
@@ -169,13 +167,11 @@ class DcdcWidget(QWidget):
                 formula_str = self.efficiency_formula.get_formula_efficiency(self.current_output)
                 self.efficiency = eval(formula_str.replace("x", str(self.current_output / 1000)))
                 print("DEBUG : New efficiency : " + str(self.efficiency))
-                print("3")
                 return
             # TODO : Look for the closest formula if the voltage input/output are not in the list of formula
             else:
                 self.efficiency = 85
                 print("DEBUG : New efficiency : " + str(self.efficiency))
-                print("4")
                 return
 
     def add_parent(self, parent):
